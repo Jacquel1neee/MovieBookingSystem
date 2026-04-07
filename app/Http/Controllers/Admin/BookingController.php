@@ -1,0 +1,59 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use App\Models\Booking;
+
+class BookingController extends Controller
+{
+    public function __construct()
+    {
+        $this->middleware('auth');
+        $this->middleware(function ($request, $next) {
+            if (!auth()->user()->is_admin) {
+                abort(403, 'Unauthorized access.');
+            }
+            return $next($request);
+        });
+    }
+    
+    public function index(Request $request)
+    {
+        $query = Booking::with(['user', 'showtime.movie']);
+        
+        if ($request->has('status') && $request->status != 'all') {
+            $query->where('status', $request->status);
+        }
+        
+        if ($request->has('search')) {
+            $query->where('booking_number', 'like', '%' . $request->search . '%');
+        }
+        
+        $bookings = $query->orderBy('created_at', 'desc')->paginate(15);
+        
+        return view('admin.bookings.index', compact('bookings'));
+    }
+    
+    public function show(Booking $booking)
+    {
+        $booking->load(['user', 'showtime.movie', 'showtime.hall', 'seats']);
+        return view('admin.bookings.show', compact('booking'));
+    }
+    
+    public function updateStatus(Request $request, Booking $booking)
+    {
+        $request->validate([
+            'status' => 'required|in:pending,paid,cancelled,completed',
+            'payment_status' => 'required|in:pending,paid,refunded'
+        ]);
+        
+        $booking->update([
+            'status' => $request->status,
+            'payment_status' => $request->payment_status
+        ]);
+        
+        return redirect()->back()->with('success', 'Booking status updated successfully.');
+    }
+}
