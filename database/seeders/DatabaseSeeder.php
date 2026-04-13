@@ -28,6 +28,16 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
+        // Create admin user
+        User::firstOrCreate(
+            ['email' => 'admin@example.com'],
+            [
+                'name' => 'Admin User',
+                'password' => Hash::make('Abc12345'),
+                'is_admin' => true,
+            ]
+        );
+
         // Create sample movies
         Movie::create([
             'title' => 'Inception',
