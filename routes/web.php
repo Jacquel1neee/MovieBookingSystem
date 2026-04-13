@@ -47,6 +47,8 @@ Route::middleware(['auth'])->group(function () {
 Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
     // Admin Dashboard - 这个路由必须存在
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
+    Route::get('/manage-admins', [AdminController::class, 'manageAdmins'])->name('manage-admins');
+    Route::post('/users/{user}/toggle-admin', [AdminController::class, 'toggleAdmin'])->name('toggle-admin');
     
     // Movie management
     Route::resource('movies', AdminMovieController::class);
