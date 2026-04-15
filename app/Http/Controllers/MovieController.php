@@ -43,10 +43,17 @@ class MovieController extends Controller
         return view('movies.index', compact('movies'));
     }
     
-    public function show($id)
+    public function show(Request $request, $id)
     {
         $movie = Movie::findOrFail($id);
-        
+        $selectedDate = $request->query('date', Carbon::now()->format('Y-m-d'));
+
+        try {
+            $selectedDate = Carbon::parse($selectedDate)->format('Y-m-d');
+        } catch (\Exception $e) {
+            $selectedDate = Carbon::now()->format('Y-m-d');
+        }
+
         $dates = [];
         for ($i = 0; $i < 7; $i++) {
             $date = Carbon::now()->addDays($i)->format('Y-m-d');
@@ -56,15 +63,13 @@ class MovieController extends Controller
                                 ->orderBy('start_time')
                                 ->get();
             
-            if ($showtimes->count() > 0) {
-                $dates[] = [
-                    'date' => $date,
-                    'formatted_date' => Carbon::parse($date)->format('l, F j, Y'),
-                    'showtimes' => $showtimes
-                ];
-            }
+            $dates[] = [
+                'date' => $date,
+                'formatted_date' => Carbon::parse($date)->format('l, F j, Y'),
+                'showtimes' => $showtimes
+            ];
         }
         
-        return view('movies.show', compact('movie', 'dates'));
+        return view('movies.show', compact('movie', 'dates', 'selectedDate'));
     }
 }

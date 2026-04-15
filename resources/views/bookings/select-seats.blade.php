@@ -68,25 +68,39 @@
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-/* 普通座位 - 绿色 */
+/* Regular seat - blue */
 .seat-btn.regular {
-    background: #4CAF50;
+    background: #1976D2;
     color: white;
 }
 
-/* VIP座位 - 金色 */
+/* VIP seat - red */
 .seat-btn.vip {
-    background: #FFD700;
-    color: #333;
+    background: #D32F2F;
+    color: white;
+    border: 2px solid #B71C1C;
+    box-shadow: 0 2px 6px rgba(211, 47, 47, 0.35);
 }
 
-/* 已选座位 - 亮蓝色，带光效 */
-.seat-btn.selected {
-    background: #2196F3 !important;
+/* Selected regular seat - green */
+.seat-btn.regular.selected {
+    background: #4CAF50 !important;
     color: white !important;
     transform: scale(1.1);
-    box-shadow: 0 0 15px #2196F3;
+    box-shadow: 0 0 15px rgba(76, 175, 80, 0.7);
     border: 2px solid white;
+    font-weight: bold;
+    z-index: 10;
+    position: relative;
+}
+
+/* Selected VIP seat - yellow */
+.seat-btn.vip.selected {
+    background: #FFEB3B !important;
+    color: #333 !important;
+    transform: scale(1.1);
+    box-shadow: 0 0 15px rgba(255, 235, 59, 0.7);
+    border: 2px solid #FBC02D;
     font-weight: bold;
     z-index: 10;
     position: relative;
@@ -247,7 +261,7 @@
             <div class="cinema-layout">
                 <!-- 屏幕 -->
                 <div class="screen-area">
-                    <div class="screen">🎬 银幕 SCREEN 🎬</div>
+                    <div class="screen">🎬 SCREEN 🎬</div>
                 </div>
                 
                 <!-- 座位图 -->
@@ -255,7 +269,7 @@
                     <form id="seat-selection-form" action="{{ route('bookings.confirm') }}" method="POST">
                         @csrf
                         <input type="hidden" name="showtime_id" value="{{ $showtime->id }}">
-                        <input type="hidden" name="seats" id="selected-seats-input" value="">
+                        <div id="selected-seats-inputs"></div>
                         
                         <table class="seats-table">
                             @php
@@ -274,7 +288,7 @@
                                     @if($seat->column <= $midPoint)
                                         @php
                                             $isBooked = in_array($seat->id, $bookedSeats);
-                                            $seatType = $seat->type;
+                                            $seatType = ($seat->row == $showtime->hall->rows || chr(64 + $seat->row) == 'J') ? 'vip' : $seat->type;
                                         @endphp
                                         
                                         <td>
@@ -307,7 +321,7 @@
                                     @if($seat->column > $midPoint)
                                         @php
                                             $isBooked = in_array($seat->id, $bookedSeats);
-                                            $seatType = $seat->type;
+                                            $seatType = ($seat->row == $showtime->hall->rows || chr(64 + $seat->row) == 'J') ? 'vip' : $seat->type;
                                         @endphp
                                         
                                         <td>
@@ -339,35 +353,13 @@
                         </table>
                     </form>
                 </div>
-                
-                <!-- 图例说明 -->
-                <div class="legend">
-                    <div class="legend-item">
-                        <div class="legend-box" style="background: #4CAF50;"></div>
-                        <span>普通座</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-box" style="background: #FFD700;"></div>
-                        <span>VIP座</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-box" style="background: #2196F3;"></div>
-                        <span>已选择</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-box" style="background: #e0e0e0; position: relative;">
-                            <span style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #ff4444; font-weight: bold;">✕</span>
-                        </div>
-                        <span>已售出</span>
-                    </div>
-                </div>
             </div>
         </div>
         
-        <!-- 右边：订票摘要 -->
+        <!-- Right: Booking Summary -->
         <div class="col-12 col-lg-4">
             <div class="summary-card sticky-top" style="top: 20px;">
-                <!-- 电影信息 -->
+                <!-- Movie Info -->
                 <div class="text-center mb-4">
                     @if($showtime->movie->poster)
                         <img src="{{ $showtime->movie->poster }}" alt="{{ $showtime->movie->title }}" 
@@ -383,47 +375,46 @@
                 
                 <hr>
                 
-                <!-- 票价信息 -->
+                <!-- Pricing -->
                 <div class="mb-4">
-                    <h6 class="fw-bold mb-3">💰 票价信息</h6>
+                    <h6 class="fw-bold mb-3">💰 Pricing</h6>
                     <div class="d-flex justify-content-between mb-2">
-                        <span><span class="legend-box" style="background: #4CAF50; display: inline-block; width: 15px; height: 15px; border-radius: 3px;"></span> 普通座:</span>
+                        <span><span class="legend-box" style="background: #4CAF50; display: inline-block; width: 15px; height: 15px; border-radius: 3px;"></span> Regular Seat:</span>
                         <span class="fw-bold">RM {{ number_format($showtime->price, 2) }}</span>
                     </div>
                     <div class="d-flex justify-content-between mb-2">
-                        <span><span class="legend-box" style="background: #FFD700; display: inline-block; width: 15px; height: 15px; border-radius: 3px;"></span> VIP座:</span>
+                        <span><span class="legend-box" style="background: #FFD700; display: inline-block; width: 15px; height: 15px; border-radius: 3px;"></span> VIP Seat:</span>
                         <span class="fw-bold text-warning">RM {{ number_format($showtime->price * 1.5, 2) }}</span>
                     </div>
                 </div>
                 
-                <!-- 已选座位计数 -->
+                <!-- Selected Seats Count -->
                 <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h6 class="fw-bold mb-0">🎫 已选座位</h6>
+                    <h6 class="fw-bold mb-0">🎫 Selected Seats</h6>
                     <span class="seat-count-badge" id="seat-count">0</span>
                 </div>
                 
-                <!-- 已选座位列表 -->
+                <!-- Selected Seats List -->
                 <div class="mb-4">
                     <div id="selected-seats-list" style="max-height: 200px; overflow-y: auto; min-height: 100px;">
-                        <p class="text-muted text-center py-3">👆 点击上方绿色或金色座位开始选择</p>
+                        <p class="text-muted text-center py-3">👆 Click any green or gold seat above to begin selecting.</p>
                     </div>
                 </div>
                 
-                <!-- 总计 -->
+                <!-- Continue Button -->
                 <div class="bg-light p-3 rounded mb-4">
                     <div class="d-flex justify-content-between align-items-center">
-                        <span class="h6 fw-bold">💵 总计:</span>
+                        <span class="h6 fw-bold">💵 Total:</span>
                         <span class="h4 fw-bold text-danger" id="total-amount">RM 0.00</span>
                     </div>
                 </div>
                 
-                <!-- 继续按钮 -->
                 <button type="button" class="btn btn-danger w-100 py-3 fw-bold mb-2" id="continue-btn" disabled onclick="submitSelection()">
-                    继续付款 →
+                    Continue to Review →
                 </button>
                 
                 <a href="{{ route('movies.show', $showtime->movie->id) }}" class="btn btn-outline-secondary w-100">
-                    ← 返回场次选择
+                    ← Back to Showtimes
                 </a>
             </div>
         </div>
@@ -431,16 +422,14 @@
 </div>
 
 <script>
-// 存储选中的座位
+// Store selected seats
 let selectedSeats = [];
 
-// 切换座位选择
+// Toggle seat selection
 function toggleSeat(button, column, row) {
-    console.log('点击座位:', '行:', row, '列:', column);
+    console.log('Seat clicked:', 'row:', row, 'column:', column);
     
-    // 如果座位已预订，不能选择
     if (button.classList.contains('booked')) {
-        alert('这个座位已经被预订了');
         return;
     }
     
@@ -449,18 +438,14 @@ function toggleSeat(button, column, row) {
     const seatType = button.dataset.type;
     const basePrice = parseFloat(button.dataset.price);
     
-    // VIP座位价格上浮50%
     const finalPrice = seatType === 'vip' ? basePrice * 1.5 : basePrice;
     
-    // 检查是否已经选中
     if (button.classList.contains('selected')) {
-        console.log('取消选择:', seatNumber);
-        // 取消选择
+        console.log('Deselected:', seatNumber);
         button.classList.remove('selected');
         selectedSeats = selectedSeats.filter(s => s.id !== seatId);
     } else {
-        console.log('选择座位:', seatNumber);
-        // 选择座位
+        console.log('Selected:', seatNumber);
         button.classList.add('selected');
         selectedSeats.push({
             id: seatId,
@@ -474,35 +459,35 @@ function toggleSeat(button, column, row) {
         });
     }
     
-    // 更新界面
+    // Update UI
     updateSelectedSeats();
     
-    // 强制浏览器重绘，确保颜色变化
+    // Force a redraw so the seat color change is visible
     button.style.transform = 'scale(1.1)';
     setTimeout(() => {
         button.style.transform = '';
     }, 200);
 }
 
-// 更新已选座位显示
+// Update the selected seats display
 function updateSelectedSeats() {
-    const seatsInput = document.getElementById('selected-seats-input');
+    const seatsContainer = document.getElementById('selected-seats-inputs');
     const seatsList = document.getElementById('selected-seats-list');
     const totalAmount = document.getElementById('total-amount');
     const continueBtn = document.getElementById('continue-btn');
     const seatCount = document.getElementById('seat-count');
     
-    // 更新隐藏输入
-    seatsInput.value = JSON.stringify(selectedSeats.map(s => s.id));
+    seatsContainer.innerHTML = '';
+    selectedSeats.forEach(seat => {
+        seatsContainer.innerHTML += `<input type="hidden" name="seats[]" value="${seat.id}">`;
+    });
     
-    console.log('当前已选座位数量:', selectedSeats.length);
+    console.log('Selected seats count:', selectedSeats.length);
     
     if (selectedSeats.length > 0) {
-        // 更新座位计数
         seatCount.textContent = selectedSeats.length;
         seatCount.style.background = '#4CAF50';
         
-        // 显示已选座位
         let html = '';
         let total = 0;
         
@@ -512,7 +497,7 @@ function updateSelectedSeats() {
                 <div class="selected-seat-item ${seatClass}">
                     <div>
                         <span class="fw-bold">${seat.row}${seat.column}</span>
-                        <small class="text-muted ms-2">(${seat.type === 'vip' ? 'VIP' : '普通'})</small>
+                        <small class="text-muted ms-2">(${seat.type === 'vip' ? 'VIP' : 'Regular'})</small>
                     </div>
                     <span class="fw-bold">RM ${seat.price.toFixed(2)}</span>
                 </div>
@@ -526,29 +511,22 @@ function updateSelectedSeats() {
     } else {
         seatCount.textContent = '0';
         seatCount.style.background = '#2196F3';
-        seatsList.innerHTML = '<p class="text-muted text-center py-3">👆 点击上方绿色或金色座位开始选择</p>';
+        seatsList.innerHTML = '<p class="text-muted text-center py-3">👆 Click any green or gold seat above to begin selecting.</p>';
         totalAmount.textContent = 'RM 0.00';
         continueBtn.disabled = true;
     }
 }
 
-// 提交选座
+// Submit the selection for review
 function submitSelection() {
-    const seatsInput = document.getElementById('selected-seats-input');
-    const selectedSeatsValue = seatsInput.value;
-    
-    if (!selectedSeatsValue || selectedSeatsValue === '[]') {
-        alert('请至少选择一个座位');
+    if (selectedSeats.length === 0) {
         return;
     }
-    
-    if (confirm('确认选择这些座位吗？')) {
-        document.getElementById('seat-selection-form').submit();
-    }
+    document.getElementById('seat-selection-form').submit();
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('页面加载完成，可用座位数量:', document.querySelectorAll('.seat-btn:not(.booked)').length);
+    console.log('Seat selection page loaded. Available seats:', document.querySelectorAll('.seat-btn:not(.booked)').length);
 });
 </script>
 @endsection

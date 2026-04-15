@@ -83,10 +83,11 @@
                     @php
                         $date = now()->addDays($i);
                         $isToday = $i == 0;
+                        $dateString = $date->format('Y-m-d');
                     @endphp
-                    <div class="me-2 {{ $i == 0 ? 'active' : '' }}">
-                        <a href="#date-{{ $date->format('Y-m-d') }}" 
-                           class="btn {{ $i == 0 ? 'btn-danger' : 'btn-outline-secondary' }} rounded-0 px-4 py-3" 
+                    <div class="me-2">
+                        <a href="{{ route('movies.show', ['id' => $movie->id, 'date' => $dateString]) }}" 
+                           class="btn {{ $selectedDate === $dateString ? 'btn-danger' : 'btn-outline-secondary' }} rounded-0 px-4 py-3" 
                            style="min-width: 100px;">
                             <small class="d-block">{{ $isToday ? 'Today' : $date->format('D') }}</small>
                             <strong class="d-block">{{ $date->format('d M') }}</strong>
@@ -98,14 +99,18 @@
     </div>
     
     <!-- Showtimes List -->
-    @forelse($dates as $dateInfo)
-    <div class="card mb-4 border-0 shadow-sm" id="date-{{ \Carbon\Carbon::parse($dateInfo['date'])->format('Y-m-d') }}">
+    @php
+        $selectedDateInfo = collect($dates)->firstWhere('date', $selectedDate);
+    @endphp
+
+    @if($selectedDateInfo)
+    <div class="card mb-4 border-0 shadow-sm" id="date-{{ $selectedDateInfo['date'] }}">
         <div class="card-header bg-white border-0 py-3">
-            <h5 class="fw-bold mb-0">{{ $dateInfo['formatted_date'] }}</h5>
+            <h5 class="fw-bold mb-0">{{ $selectedDateInfo['formatted_date'] }}</h5>
         </div>
         <div class="card-body">
             <div class="row g-3">
-                @forelse($dateInfo['showtimes'] as $showtime)
+                @forelse($selectedDateInfo['showtimes'] as $showtime)
                 <div class="col-12 col-sm-6 col-md-4 col-lg-3">
                     <div class="border rounded p-3 text-center h-100">
                         <div class="h4 fw-bold text-danger mb-2">{{ $showtime->start_time->format('h:i A') }}</div>
@@ -134,12 +139,12 @@
             </div>
         </div>
     </div>
-    @empty
+    @else
     <div class="alert alert-light text-center py-5">
         <i class="bi bi-calendar-x fs-1 d-block mb-3 text-muted"></i>
-        <p class="text-muted mb-0">No showtimes available for this movie.</p>
+        <p class="text-muted mb-0">No showtimes available for {{ Carbon::parse($selectedDate)->format('l, F j, Y') }}.</p>
     </div>
-    @endforelse
+    @endif
 </div>
 
 <!-- Cinema Info Section -->

@@ -57,14 +57,13 @@
                     </div>
                     
                     <div class="alert alert-info">
-                        <i class="bi bi-info-circle"></i> This is a demo - no actual payment will be processed.
+                        <i class="bi bi-info-circle"></i> This is a demo flow. Proceed to the mock payment page to complete your booking.
                     </div>
                     
-                    <form action="{{ route('bookings.store') }}" method="POST">
-                        @csrf
+                    <form action="{{ route('bookings.payment') }}" method="GET">
                         <div class="d-flex justify-content-between">
                             <a href="{{ route('bookings.select-seats', $showtime->id) }}" class="btn btn-secondary">Back to Seat Selection</a>
-                            <button type="submit" class="btn btn-success">Confirm Booking</button>
+                            <button type="submit" class="btn btn-primary">Proceed to Payment</button>
                         </div>
                     </form>
                 </div>

@@ -57,7 +57,7 @@ class HallController extends Controller
                     'row' => $row,
                     'column' => $col,
                     'seat_number' => $seatNumber,
-                    'type' => ($row <= 2) ? 'vip' : 'regular' // First 2 rows as VIP
+                    'type' => ($row == $request->rows) ? 'vip' : 'regular' // Last row is VIP
                 ]);
             }
         }

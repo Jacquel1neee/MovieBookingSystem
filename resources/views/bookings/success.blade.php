@@ -43,7 +43,7 @@
                     </div>
                     
                     <div class="mt-4">
-                        <a href="{{ route('bookings.my-bookings') }}" class="btn btn-primary">View My Bookings</a>
+                        <a href="{{ route('bookings.history') }}" class="btn btn-primary">View Ticket History</a>
                         <a href="{{ route('movies.index') }}" class="btn btn-outline-secondary">Browse More Movies</a>
                     </div>
                 </div>

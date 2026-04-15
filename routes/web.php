@@ -36,9 +36,13 @@ Route::middleware(['auth'])->group(function () {
     // Booking routes
     Route::get('/bookings/select-seats/{showtimeId}', [BookingController::class, 'selectSeats'])->name('bookings.select-seats');
     Route::post('/bookings/confirm', [BookingController::class, 'confirmBooking'])->name('bookings.confirm');
+    Route::get('/bookings/payment', [BookingController::class, 'paymentPage'])->name('bookings.payment');
     Route::post('/bookings/store', [BookingController::class, 'storeBooking'])->name('bookings.store');
     Route::get('/bookings/success/{id}', [BookingController::class, 'bookingSuccess'])->name('bookings.success');
-    Route::get('/my-bookings', [BookingController::class, 'myBookings'])->name('bookings.my-bookings');
+    Route::get('/ticket-history', [BookingController::class, 'ticketHistory'])->name('bookings.history');
+    Route::get('/my-bookings', [BookingController::class, 'ticketHistory'])->name('bookings.my-bookings');
+    Route::get('/bookings/exchange', [BookingController::class, 'exchangeDashboard'])->name('bookings.exchange-dashboard');
+    Route::get('/bookings/{id}/exchange', [BookingController::class, 'exchangePage'])->name('bookings.exchange');
     Route::get('/bookings/{id}', [BookingController::class, 'showBooking'])->name('bookings.show');
     Route::post('/bookings/{id}/cancel', [BookingController::class, 'cancelBooking'])->name('bookings.cancel');
     Route::post('/bookings/{id}/exchange', [BookingController::class, 'requestExchange'])->name('bookings.request-exchange');

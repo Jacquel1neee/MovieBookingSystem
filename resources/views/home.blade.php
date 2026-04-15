@@ -44,6 +44,18 @@
                 <span class="d-none d-sm-inline">GSC Snacks</span>
             </a>
         </div>
+        <div class="col-6 col-md-3 col-lg-2">
+            <a href="{{ route('bookings.history') }}" class="btn btn-outline-danger w-100 py-3">
+                <i class="bi bi-clock-history d-block fs-4 mb-2"></i>
+                <span class="d-none d-sm-inline">Ticket History</span>
+            </a>
+        </div>
+        <div class="col-6 col-md-3 col-lg-2">
+            <a href="{{ route('bookings.exchange-dashboard') }}" class="btn btn-outline-warning w-100 py-3">
+                <i class="bi bi-arrow-repeat d-block fs-4 mb-2"></i>
+                <span class="d-none d-sm-inline">Exchange Tickets</span>
+            </a>
+        </div>
     </div>
 </div>
 

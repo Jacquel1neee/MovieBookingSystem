@@ -8,7 +8,7 @@
         <div class="col-12">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="{{ route('bookings.my-bookings') }}">My Bookings</a></li>
+                    <li class="breadcrumb-item"><a href="{{ route('bookings.history') }}">Ticket History</a></li>
                     <li class="breadcrumb-item active">Booking Details</li>
                 </ol>
             </nav>
@@ -79,10 +79,10 @@
                     </table>
                     
                     @if($booking->status == 'paid' && $booking->showtime->start_time > now())
-                    <div class="mt-4">
-                        <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#exchangeModal">
+                    <div class="mt-4 d-flex flex-wrap gap-2">
+                        <a href="{{ route('bookings.exchange', $booking->id) }}" class="btn btn-warning">
                             <i class="bi bi-arrow-repeat"></i> Request Exchange
-                        </button>
+                        </a>
                         <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#cancelModal">
                             <i class="bi bi-x-circle"></i> Cancel Booking
                         </button>

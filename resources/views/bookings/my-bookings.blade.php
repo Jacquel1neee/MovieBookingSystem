@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'My Bookings - GSC Cinemas')
+@section('title', ($pageTitle ?? 'My Bookings') . ' - GSC Cinemas')
 
 @section('content')
 <!-- Page Header -->
@@ -8,7 +8,7 @@
     <div class="container">
         <div class="row align-items-center">
             <div class="col-12">
-                <h1 class="text-white fw-bold mb-2">My Bookings</h1>
+                <h1 class="text-white fw-bold mb-2">{{ $pageTitle ?? 'My Bookings' }}</h1>
                 <p class="text-white-50 mb-0">View and manage your movie tickets</p>
             </div>
         </div>

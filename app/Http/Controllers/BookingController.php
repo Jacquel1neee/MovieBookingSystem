@@ -28,6 +28,17 @@ class BookingController extends Controller
     
     public function confirmBooking(Request $request)
     {
+        $seatIds = $request->input('seats');
+        if (is_string($seatIds)) {
+            $parsedSeats = json_decode($seatIds, true);
+            if (is_array($parsedSeats)) {
+                $seatIds = $parsedSeats;
+            } else {
+                $seatIds = array_filter(explode(',', $seatIds));
+            }
+            $request->merge(['seats' => $seatIds]);
+        }
+
         $request->validate([
             'showtime_id' => 'required|exists:showtimes,id',
             'seats' => 'required|array|min:1',
@@ -57,7 +68,30 @@ class BookingController extends Controller
         
         return view('bookings.confirm', compact('showtime', 'seats', 'totalAmount'));
     }
-    
+
+    public function paymentPage()
+    {
+        $bookingData = session('booking_data');
+
+        if (!$bookingData) {
+            return redirect()->route('movies.index')->with('error', 'Booking session expired.');
+        }
+
+        $showtime = Showtime::with(['movie', 'hall'])->findOrFail($bookingData['showtime_id']);
+        $seats = Seat::whereIn('id', $bookingData['seat_ids'])->get();
+
+        return view('bookings.payment', compact('showtime', 'seats', 'bookingData'));
+    }
+
+    public function exchangePage($id)
+    {
+        $booking = Booking::with(['showtime.movie', 'showtime.hall', 'seats'])
+                         ->where('user_id', Auth::id())
+                         ->findOrFail($id);
+
+        return view('bookings.exchange', compact('booking'));
+    }
+
     public function storeBooking(Request $request)
     {
         $bookingData = session('booking_data');
@@ -123,7 +157,34 @@ class BookingController extends Controller
                           ->orderBy('created_at', 'desc')
                           ->paginate(10);
         
-        return view('bookings.my-bookings', compact('bookings'));
+        $pageTitle = 'My Bookings';
+        return view('bookings.my-bookings', compact('bookings', 'pageTitle'));
+    }
+    
+    public function ticketHistory()
+    {
+        $bookings = Booking::with(['showtime.movie', 'showtime.hall'])
+                          ->where('user_id', Auth::id())
+                          ->orderBy('created_at', 'desc')
+                          ->paginate(10);
+
+        $pageTitle = 'Ticket History';
+        return view('bookings.my-bookings', compact('bookings', 'pageTitle'));
+    }
+
+    public function exchangeDashboard()
+    {
+        $bookings = Booking::with(['showtime.movie', 'showtime.hall'])
+            ->where('user_id', Auth::id())
+            ->where('status', 'paid')
+            ->whereHas('showtime', function ($query) {
+                $query->where('start_time', '>', now());
+            })
+            ->orderBy('showtime.start_time')
+            ->get();
+
+        $pageTitle = 'Exchange Tickets';
+        return view('bookings.exchange-dashboard', compact('bookings', 'pageTitle'));
     }
     
     public function showBooking($id)
