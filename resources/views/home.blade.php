@@ -21,25 +21,25 @@
 <div class="container mt-4">
     <div class="row g-2 justify-content-center">
         <div class="col-6 col-md-3 col-lg-2">
-            <a href="{{ route('movies.index') }}" class="btn btn-outline-danger w-100 py-3">
+            <a href="{{ route('home') }}#now-showing" class="btn btn-outline-danger w-100 py-3">
                 <i class="bi bi-camera-reels-fill d-block fs-4 mb-2"></i>
                 <span class="d-none d-sm-inline">Now Showing</span>
             </a>
         </div>
         <div class="col-6 col-md-3 col-lg-2">
-            <a href="{{ route('movies.index', ['coming-soon' => 1]) }}" class="btn btn-outline-secondary w-100 py-3">
+            <a href="{{ route('home') }}#coming-soon" class="btn btn-outline-secondary w-100 py-3">
                 <i class="bi bi-calendar-event-fill d-block fs-4 mb-2"></i>
                 <span class="d-none d-sm-inline">Coming Soon</span>
             </a>
         </div>
         <div class="col-6 col-md-3 col-lg-2">
-            <a href="#" class="btn btn-outline-secondary w-100 py-3">
+            <a href="{{ route('promotions') }}" class="btn btn-outline-secondary w-100 py-3">
                 <i class="bi bi-ticket-perforated-fill d-block fs-4 mb-2"></i>
                 <span class="d-none d-sm-inline">Promotions</span>
             </a>
         </div>
         <div class="col-6 col-md-3 col-lg-2">
-            <a href="#" class="btn btn-outline-secondary w-100 py-3">
+            <a href="{{ route('snacks') }}" class="btn btn-outline-secondary w-100 py-3">
                 <i class="bi bi-cup-straw d-block fs-4 mb-2"></i>
                 <span class="d-none d-sm-inline">GSC Snacks</span>
             </a>
@@ -48,12 +48,6 @@
             <a href="{{ route('bookings.history') }}" class="btn btn-outline-danger w-100 py-3">
                 <i class="bi bi-clock-history d-block fs-4 mb-2"></i>
                 <span class="d-none d-sm-inline">Ticket History</span>
-            </a>
-        </div>
-        <div class="col-6 col-md-3 col-lg-2">
-            <a href="{{ route('bookings.exchange-dashboard') }}" class="btn btn-outline-warning w-100 py-3">
-                <i class="bi bi-arrow-repeat d-block fs-4 mb-2"></i>
-                <span class="d-none d-sm-inline">Exchange Tickets</span>
             </a>
         </div>
     </div>
@@ -79,7 +73,7 @@
             <div class="card h-100 border-0 shadow-sm">
                 <div class="position-relative">
                     @if($movie->poster)
-                        <img src="{{ $movie->poster }}" class="card-img-top" alt="{{ $movie->title }}" style="aspect-ratio: 2/3; object-fit: cover;">
+                        <img src="{{ $movie->poster_url }}" class="card-img-top" alt="{{ $movie->title }}" style="aspect-ratio: 2/3; object-fit: cover;">
                     @else
                         <div class="bg-secondary d-flex align-items-center justify-content-center" style="aspect-ratio: 2/3;">
                             <i class="bi bi-film text-white" style="font-size: 3rem;"></i>
@@ -134,7 +128,7 @@
             <div class="card h-100 border-0 shadow-sm">
                 <div class="position-relative">
                     @if($movie->poster)
-                        <img src="{{ $movie->poster }}" class="card-img-top" alt="{{ $movie->title }}" style="aspect-ratio: 2/3; object-fit: cover;">
+                        <img src="{{ $movie->poster_url }}" class="card-img-top" alt="{{ $movie->title }}" style="aspect-ratio: 2/3; object-fit: cover;">
                     @else
                         <div class="bg-secondary d-flex align-items-center justify-content-center" style="aspect-ratio: 2/3;">
                             <i class="bi bi-film text-white" style="font-size: 3rem;"></i>
@@ -177,28 +171,28 @@
                 <p class="text-white-50 mb-4">Experience movies like never before with our premium cinema concepts</p>
                 <div class="row g-3">
                     <div class="col-6">
-                        <div class="border border-secondary rounded p-3 text-center">
+                        <button type="button" class="border border-secondary rounded p-3 text-center w-100 bg-white text-dark" data-bs-toggle="modal" data-bs-target="#experienceModal" data-experience="Dolby Atmos">
                             <i class="bi bi-soundwave fs-2 text-danger"></i>
                             <h6 class="mt-2 mb-0">Dolby Atmos</h6>
-                        </div>
+                        </button>
                     </div>
                     <div class="col-6">
-                        <div class="border border-secondary rounded p-3 text-center">
+                        <button type="button" class="border border-secondary rounded p-3 text-center w-100 bg-white text-dark" data-bs-toggle="modal" data-bs-target="#experienceModal" data-experience="IMAX">
                             <i class="bi bi-brightness-alt-high fs-2 text-danger"></i>
                             <h6 class="mt-2 mb-0">IMAX</h6>
-                        </div>
+                        </button>
                     </div>
                     <div class="col-6">
-                        <div class="border border-secondary rounded p-3 text-center">
+                        <button type="button" class="border border-secondary rounded p-3 text-center w-100 bg-white text-dark" data-bs-toggle="modal" data-bs-target="#experienceModal" data-experience="Gold Class">
                             <i class="bi bi-cup-straw fs-2 text-danger"></i>
                             <h6 class="mt-2 mb-0">Gold Class</h6>
-                        </div>
+                        </button>
                     </div>
                     <div class="col-6">
-                        <div class="border border-secondary rounded p-3 text-center">
+                        <button type="button" class="border border-secondary rounded p-3 text-center w-100 bg-white text-dark" data-bs-toggle="modal" data-bs-target="#experienceModal" data-experience="On Stage">
                             <i class="bi bi-joystick fs-2 text-danger"></i>
                             <h6 class="mt-2 mb-0">On Stage</h6>
-                        </div>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -211,6 +205,26 @@
                         <img src="https://www.gsc.com.my/media/images/gold-class.jpg" class="img-fluid rounded" alt="Gold Class">
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- GSC Experience Modal -->
+<div class="modal fade" id="experienceModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="experienceModalLabel">GSC Experience</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <h5 id="experienceTitle">Experience</h5>
+                <p id="experienceDescription" class="text-muted"></p>
+                <ul class="list-group list-group-flush" id="experienceDetails"></ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
@@ -290,25 +304,25 @@
             <div class="col-6 col-md-3">
                 <h6 class="text-white mb-3">About GSC</h6>
                 <ul class="list-unstyled small">
-                    <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none">About Us</a></li>
-                    <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none">Careers</a></li>
-                    <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none">Terms of Use</a></li>
+                    <li class="mb-2"><a href="{{ route('about-us') }}" class="text-white-50 text-decoration-none">About Us</a></li>
+                    <li class="mb-2"><a href="{{ route('careers') }}" class="text-white-50 text-decoration-none">Careers</a></li>
+                    <li class="mb-2"><a href="{{ route('terms') }}" class="text-white-50 text-decoration-none">Terms of Use</a></li>
                 </ul>
             </div>
             <div class="col-6 col-md-3">
                 <h6 class="text-white mb-3">Movies</h6>
                 <ul class="list-unstyled small">
-                    <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none">Now Showing</a></li>
-                    <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none">Coming Soon</a></li>
-                    <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none">Promotions</a></li>
+                    <li class="mb-2"><a href="{{ route('home') }}#now-showing" class="text-white-50 text-decoration-none">Now Showing</a></li>
+                    <li class="mb-2"><a href="{{ route('home') }}#coming-soon" class="text-white-50 text-decoration-none">Coming Soon</a></li>
+                    <li class="mb-2"><a href="{{ route('promotions') }}" class="text-white-50 text-decoration-none">Promotions</a></li>
                 </ul>
             </div>
             <div class="col-6 col-md-3">
                 <h6 class="text-white mb-3">Support</h6>
                 <ul class="list-unstyled small">
-                    <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none">FAQ</a></li>
-                    <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none">Contact Us</a></li>
-                    <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none">Feedback</a></li>
+                    <li class="mb-2"><a href="{{ route('support.faq') }}" class="text-white-50 text-decoration-none">FAQ</a></li>
+                    <li class="mb-2"><a href="{{ route('support.contact') }}" class="text-white-50 text-decoration-none">Contact Us</a></li>
+                    <li class="mb-2"><a href="{{ route('support.feedback') }}" class="text-white-50 text-decoration-none">Feedback</a></li>
                 </ul>
             </div>
             <div class="col-6 col-md-3">
@@ -345,17 +359,74 @@
     </div>
 </div>
 
-<!-- JavaScript to handle dismiss -->
-@push('scripts')
+<!-- JavaScript to handle dismiss and experience modal -->
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         var welcomeAlert = document.getElementById('welcomeAlert');
         if (welcomeAlert) {
-            var alert = new bootstrap.Alert(welcomeAlert.querySelector('.alert'));
+            var alertElement = welcomeAlert.querySelector('.alert');
+            if (alertElement) {
+                new bootstrap.Alert(alertElement);
+            }
         }
+
+        var experienceModal = document.getElementById('experienceModal');
+        experienceModal.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            var experience = button.getAttribute('data-experience');
+            var title = document.getElementById('experienceTitle');
+            var description = document.getElementById('experienceDescription');
+            var details = document.getElementById('experienceDetails');
+
+            var content = {
+                'Dolby Atmos': {
+                    title: 'Dolby Atmos',
+                    description: 'Immersive cinema sound that moves around you in three-dimensional space.',
+                    bulletPoints: [
+                        'Powerful surround audio',
+                        'Precise sound placement',
+                        'Enhanced movie realism'
+                    ]
+                },
+                'IMAX': {
+                    title: 'IMAX',
+                    description: 'A giant screen experience with crystal-clear visuals and immersive sound.',
+                    bulletPoints: [
+                        'Bigger screen size',
+                        'Sharper picture',
+                        'Epic cinematic scale'
+                    ]
+                },
+                'Gold Class': {
+                    title: 'Gold Class',
+                    description: 'Premium comfort with recliner seats, gourmet snacks, and luxury service.',
+                    bulletPoints: [
+                        'Recliner seating',
+                        'In-seat dining',
+                        'Private lounge access'
+                    ]
+                },
+                'On Stage': {
+                    title: 'On Stage',
+                    description: 'A bold, luxurious screening room designed for unforgettable movie nights.',
+                    bulletPoints: [
+                        'Designer seating',
+                        'Enhanced visuals',
+                        'Premium audio setup'
+                    ]
+                }
+            };
+
+            var selected = content[experience] || content['Dolby Atmos'];
+            experienceModal.querySelector('.modal-title').textContent = selected.title;
+            title.textContent = selected.title;
+            description.textContent = selected.description;
+            details.innerHTML = selected.bulletPoints.map(function(item) {
+                return '<li class="list-group-item">' + item + '</li>';
+            }).join('');
+        });
     });
 </script>
-@endpush
 
 @endsection
 

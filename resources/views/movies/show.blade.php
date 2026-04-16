@@ -10,7 +10,7 @@
             <!-- Movie Poster -->
             <div class="col-12 col-md-4 col-lg-3">
                 @if($movie->poster)
-                    <img src="{{ $movie->poster }}" class="img-fluid w-100 shadow-lg" alt="{{ $movie->title }}" style="border-radius: 10px;">
+                    <img src="{{ $movie->poster_url }}" class="img-fluid w-100 shadow-lg" alt="{{ $movie->title }}" style="border-radius: 10px;">
                 @else
                     <div class="bg-secondary d-flex align-items-center justify-content-center" style="height: 400px; border-radius: 10px;">
                         <i class="bi bi-film text-white" style="font-size: 5rem;"></i>

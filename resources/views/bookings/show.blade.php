@@ -25,7 +25,7 @@
                     <div class="row">
                         <div class="col-md-4">
                             @if($booking->showtime->movie->poster)
-                                <img src="{{ $booking->showtime->movie->poster }}" class="img-fluid rounded" alt="{{ $booking->showtime->movie->title }}">
+                                <img src="{{ $booking->showtime->movie->poster_url }}" class="img-fluid rounded" alt="{{ $booking->showtime->movie->title }}">
                             @else
                                 <div class="bg-secondary d-flex align-items-center justify-content-center rounded" style="height: 200px;">
                                     <i class="bi bi-film text-white" style="font-size: 3rem;"></i>

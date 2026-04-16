@@ -16,6 +16,9 @@
                     <span class="text-white">
                         <i class="bi bi-calendar3 me-2"></i>{{ now()->format('l, d M Y') }}
                     </span>
+                    <a href="{{ route('home') }}" class="btn btn-outline-light btn-sm">
+                        <i class="bi bi-house-door me-1"></i> Home
+                    </a>
                 </div>
             </div>
         </div>
@@ -176,6 +179,9 @@
                         </a>
                         <a href="{{ route('admin.halls.create') }}" class="btn btn-outline-danger text-start">
                             <i class="bi bi-plus-circle me-2"></i>Add New Hall
+                        </a>
+                        <a href="{{ route('admin.halls.index') }}" class="btn btn-outline-danger text-start">
+                            <i class="bi bi-grid me-2"></i>Manage Halls
                         </a>
                         <a href="{{ route('admin.showtimes.create') }}" class="btn btn-outline-danger text-start">
                             <i class="bi bi-plus-circle me-2"></i>Create Showtime

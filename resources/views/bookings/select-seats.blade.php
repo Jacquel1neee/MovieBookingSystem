@@ -4,7 +4,6 @@
 
 @push('styles')
 <style>
-/* 整体影院布局 */
 .cinema-layout {
     max-width: 1000px;
     margin: 0 auto;
@@ -14,7 +13,6 @@
     box-shadow: 0 10px 30px rgba(0,0,0,0.1);
 }
 
-/* 屏幕区域 */
 .screen-area {
     text-align: center;
     margin-bottom: 40px;
@@ -33,7 +31,6 @@
     box-shadow: 0 5px 15px rgba(0,0,0,0.3);
 }
 
-/* 座位表格 */
 .seats-table {
     width: 100%;
     border-collapse: collapse;
@@ -52,7 +49,6 @@
     font-size: 16px;
 }
 
-/* 座位样式 */
 .seat-btn {
     width: 45px;
     height: 45px;
@@ -68,23 +64,23 @@
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-/* Regular seat - blue */
+/* Regular seat - green */
 .seat-btn.regular {
-    background: #1976D2;
+    background: #4CAF50;
     color: white;
 }
 
-/* VIP seat - red */
+/* VIP seat - yellow */
 .seat-btn.vip {
-    background: #D32F2F;
+    background: #ffd700;
     color: white;
     border: 2px solid #B71C1C;
     box-shadow: 0 2px 6px rgba(211, 47, 47, 0.35);
 }
 
-/* Selected regular seat - green */
+/* Selected regular seat - blue */
 .seat-btn.regular.selected {
-    background: #4CAF50 !important;
+    background: #1976D2 !important;
     color: white !important;
     transform: scale(1.1);
     box-shadow: 0 0 15px rgba(76, 175, 80, 0.7);
@@ -94,9 +90,9 @@
     position: relative;
 }
 
-/* Selected VIP seat - yellow */
+/* Selected VIP seat - blue */
 .seat-btn.vip.selected {
-    background: #FFEB3B !important;
+    background: #1976D2 !important;
     color: #333 !important;
     transform: scale(1.1);
     box-shadow: 0 0 15px rgba(255, 235, 59, 0.7);
@@ -106,7 +102,6 @@
     position: relative;
 }
 
-/* 已售出座位 - 灰色打叉 */
 .seat-btn.booked {
     background: #e0e0e0;
     color: #9e9e9e;
@@ -134,19 +129,16 @@
     transform: rotate(45deg);
 }
 
-/* 悬停效果 - 只有可选座位才有 */
 .seat-btn:not(.booked):not(.selected):hover {
     transform: scale(1.15);
     box-shadow: 0 4px 12px rgba(0,0,0,0.3);
     filter: brightness(1.1);
 }
 
-/* 过道列 */
 .aisle-col {
     width: 30px;
 }
 
-/* 图例 */
 .legend {
     display: flex;
     flex-wrap: wrap;
@@ -170,7 +162,6 @@
     border-radius: 6px;
 }
 
-/* 侧边栏 */
 .summary-card {
     background: white;
     border-radius: 15px;
@@ -213,7 +204,6 @@
     transition: all 0.3s;
 }
 
-/* 响应式 */
 @media (max-width: 768px) {
     .seat-btn {
         width: 35px;
@@ -256,10 +246,8 @@
 
 <div class="container mb-5">
     <div class="row">
-        <!-- 左边：电影院座位平面图 -->
         <div class="col-12 col-lg-8 mb-4 mb-lg-0">
             <div class="cinema-layout">
-                <!-- 屏幕 -->
                 <div class="screen-area">
                     <div class="screen">🎬 SCREEN 🎬</div>
                 </div>
@@ -362,7 +350,7 @@
                 <!-- Movie Info -->
                 <div class="text-center mb-4">
                     @if($showtime->movie->poster)
-                        <img src="{{ $showtime->movie->poster }}" alt="{{ $showtime->movie->title }}" 
+                        <img src="{{ $showtime->movie->poster_url }}" alt="{{ $showtime->movie->title }}"
                              style="width: 100px; height: 150px; object-fit: cover; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.2);">
                     @endif
                     <h5 class="fw-bold mt-3">{{ $showtime->movie->title }}</h5>

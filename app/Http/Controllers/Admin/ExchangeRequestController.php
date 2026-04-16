@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\ExchangeRequest;
 use App\Models\Booking;
 use App\Models\BookingSeat;
+use App\Models\Seat;
 use Illuminate\Support\Facades\DB;
 
 class ExchangeRequestController extends Controller
@@ -57,12 +58,20 @@ class ExchangeRequestController extends Controller
             if ($newShowtime->start_time < now()) {
                 throw new \Exception('Cannot exchange to a past showtime.');
             }
-            
-            // Check seat availability for new showtime
+
+            $seatIds = $exchangeRequest->selected_seat_ids ?? $oldBooking->seats->pluck('id')->toArray();
+            $selectedSeats = Seat::whereIn('id', $seatIds)
+                ->where('hall_id', $newShowtime->hall_id)
+                ->get();
+
+            if ($selectedSeats->count() !== $oldBooking->total_seats) {
+                throw new \Exception('The requested seat selection is invalid for the new hall.');
+            }
+
             $bookedSeats = $newShowtime->getBookedSeats();
-            foreach ($oldBooking->seats as $seat) {
+            foreach ($selectedSeats as $seat) {
                 if (in_array($seat->id, $bookedSeats)) {
-                    throw new \Exception('Some seats are no longer available in the new showtime.');
+                    throw new \Exception('One or more selected seats are no longer available in the new showtime.');
                 }
             }
             
@@ -77,8 +86,8 @@ class ExchangeRequestController extends Controller
                 'payment_status' => 'paid'
             ]);
             
-            // Transfer seats to new booking
-            foreach ($oldBooking->seats as $seat) {
+            // Assign requested seats to new booking
+            foreach ($selectedSeats as $seat) {
                 BookingSeat::create([
                     'booking_id' => $newBooking->id,
                     'seat_id' => $seat->id,

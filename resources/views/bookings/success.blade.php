@@ -42,7 +42,38 @@
                         </div>
                     </div>
                     
-                    <div class="mt-4">
+                    @if(!empty($completedSnackItems))
+                        <div class="alert alert-success text-start mt-4">
+                            <h6>Snacks Added</h6>
+                            <p class="mb-2">Your snack combos were added to the booking.</p>
+                            <ul class="mb-0">
+                                @foreach($completedSnackItems as $item)
+                                    <li>{{ $item['quantity'] }} × {{ $item['name'] }} — RM {{ number_format($item['subtotal'], 2) }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @else
+                        <div class="alert alert-info text-start mt-4">
+                            <h6>Want snacks with your movie?</h6>
+                            <p class="mb-0">You can add a snack combo now and have it ready at pickup.</p>
+                        </div>
+                    @endif
+  <p class="mb-2">Your snack combos were added to the booking.</p>
+                            <ul class="mb-0">
+                                @foreach($completedSnackItems as $item)
+                                    <li>{{ $item['quantity'] }} × {{ $item['name'] }} — RM {{ number_format($item['subtotal'], 2) }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @else
+                        <div class="alert alert-info text-start mt-4">
+                            <h6>Want snacks with your movie?</h6>
+                            <p class="mb-0">You can add a snack combo now and have it ready at pickup.</p>
+                        </div>
+                    @endif
+
+                    <div class="d-grid gap-2">
+                        <a href="{{ route('snacks') }}" class="btn btn-warning">Yes, add snacks</a>
                         <a href="{{ route('bookings.history') }}" class="btn btn-primary">View Ticket History</a>
                         <a href="{{ route('movies.index') }}" class="btn btn-outline-secondary">Browse More Movies</a>
                     </div>

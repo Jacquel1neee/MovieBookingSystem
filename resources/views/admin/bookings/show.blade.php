@@ -20,7 +20,7 @@
                     <div class="row">
                         <div class="col-md-4">
                             @if($booking->showtime->movie->poster)
-                                <img src="{{ $booking->showtime->movie->poster }}" class="img-fluid rounded" alt="{{ $booking->showtime->movie->title }}">
+                                <img src="{{ $booking->showtime->movie->poster_url }}" class="img-fluid rounded" alt="{{ $booking->showtime->movie->title }}">
                             @endif
                         </div>
                         <div class="col-md-8">

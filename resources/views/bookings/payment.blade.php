@@ -16,7 +16,7 @@
                     <div class="row">
                         <div class="col-md-4">
                             @if($showtime->movie->poster)
-                                <img src="{{ $showtime->movie->poster }}" class="img-fluid rounded" alt="{{ $showtime->movie->title }}">
+                                <img src="{{ $showtime->movie->poster_url }}" class="img-fluid rounded" alt="{{ $showtime->movie->title }}">
                             @endif
                         </div>
                         <div class="col-md-8">
@@ -38,16 +38,56 @@
                                 <span>Seat count</span>
                                 <strong>{{ $bookingData['total_seats'] }}</strong>
                             </li>
+                            @if($snackData)
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>Snacks total</span>
+                                    <strong>RM {{ number_format($snackData['total_amount'], 2) }}</strong>
+                                </li>
+                            @endif
                             <li class="list-group-item d-flex justify-content-between">
                                 <span>Payment method</span>
                                 <strong>Demo Checkout</strong>
                             </li>
                             <li class="list-group-item d-flex justify-content-between">
                                 <span>Total amount</span>
-                                <strong>RM {{ number_format($bookingData['total_amount'], 2) }}</strong>
+                                <strong>RM {{ number_format($combinedTotal
+                                <span>Payment method</span>
+                                <strong>Demo Checkout</strong>
                             </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                    @if($snackData)
+                        <div class="alert alert-success">
+                            <h6 class="mb-2">Selected Snack Combos</h6>
+                            <ul class="mb-2">
+                                @foreach($snackData['items'] as $item)
+                                    <li>{{ $item['quantity'] }} × {{ $item['name'] }} — RM {{ number_format($item['subtotal'], 2) }}</li>
+                                @endforeach
+                            </ul>
+                            <strong>Snack total:</strong> RM {{ number_format($snackData['total_amount'], 2) }}
+                        </div>
+                    @else
+                        <div class="alert alert-secondary">
+                            Want snacks with your booking? Visit the <a href="{{ route('snacks') }}" class="link-danger">GSC Snacks</a> page before payment.
+                        </div>
+                    @endif  </li>
                         </ul>
                     </div>
+
+                    @if($snackData)
+                        <div class="alert alert-success">
+                            <h6 class="mb-2">Selected Snack Combos</h6>
+                            <ul class="mb-2">
+                                @foreach($snackData['items'] as $item)
+                                    <li>{{ $item['quantity'] }} × {{ $item['name'] }} — RM {{ number_format($item['subtotal'], 2) }}</li>
+                                @endforeach
+                            </ul>
+                            <strong>Snack total:</strong> RM {{ number_format($snackData['total_amount'], 2) }}
+                        </div>
+                    @else
+                        <div class="alert alert-secondary">
+                            Want snacks with your booking? Visit the <a href="{{ route('snacks') }}" class="link-danger">GSC Snacks</a> page before payment.
+                        </div>
+                    @endif
 
                     <form action="{{ route('bookings.store') }}" method="POST">
                         @csrf

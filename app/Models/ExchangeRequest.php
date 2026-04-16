@@ -17,8 +17,13 @@ class ExchangeRequest extends Model
         'booking_id',
         'new_showtime_id',
         'reason',
+        'selected_seat_ids',
         'admin_remarks',
         'status'
+    ];
+
+    protected $casts = [
+        'selected_seat_ids' => 'array',
     ];
 
     protected static function boot()

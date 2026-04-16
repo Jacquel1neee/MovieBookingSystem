@@ -14,7 +14,7 @@
                     <div class="row mb-4">
                         <div class="col-md-4">
                             @if($showtime->movie->poster)
-                                <img src="{{ $showtime->movie->poster }}" class="img-fluid rounded" alt="{{ $showtime->movie->title }}">
+                                <img src="{{ $showtime->movie->poster_url }}" class="img-fluid rounded" alt="{{ $showtime->movie->title }}">
                             @endif
                         </div>
                         <div class="col-md-8">
@@ -63,7 +63,13 @@
                     <form action="{{ route('bookings.payment') }}" method="GET">
                         <div class="d-flex justify-content-between">
                             <a href="{{ route('bookings.select-seats', $showtime->id) }}" class="btn btn-secondary">Back to Seat Selection</a>
-                            <button type="submit" class="btn btn-primary">Proceed to Payment</button>
+                            <div>
+                                <a href="{{ route('snacks', ['source' => 'booking']) }}" class="btn btn-warning me-2">Add Snacks</a>
+                                <button type="submit" class="btn btn-primary">Proceed to Payment</button>
+                            </div
+                                <a href="{{ route('snacks', ['source' => 'booking']) }}" class="btn btn-warning me-2">Add Snacks</a>
+                                <button type="submit" class="btn btn-primary">Proceed to Payment</button>
+                            </div>
                         </div>
                     </form>
                 </div>

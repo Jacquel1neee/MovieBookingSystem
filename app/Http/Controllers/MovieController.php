@@ -11,7 +11,14 @@ class MovieController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Movie::where('is_showing', true);
+        $query = Movie::query();
+
+        if ($request->has('coming-soon')) {
+            $query->where('release_date', '>', now()->format('Y-m-d'));
+        } else {
+            $query->where('is_showing', true)
+                  ->where('release_date', '<=', now()->format('Y-m-d'));
+        }
         
         if ($request->has('search')) {
             $query->where('title', 'like', '%' . $request->search . '%');

@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MovieController;
 use App\Http\Controllers\BookingController;
+use App\Http\Controllers\PageController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\MovieController as AdminMovieController;
 use App\Http\Controllers\Admin\HallController as AdminHallController;
@@ -22,6 +23,15 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/movies', [MovieController::class, 'index'])->name('movies.index');
 Route::get('/movies/{id}', [MovieController::class, 'show'])->name('movies.show');
 
+Route::get('/about-us', [PageController::class, 'about'])->name('about-us');
+Route::get('/careers', [PageController::class, 'careers'])->name('careers');
+Route::get('/terms-of-use', [PageController::class, 'terms'])->name('terms');
+Route::get('/promotions', [PageController::class, 'promotions'])->name('promotions');
+Route::get('/gsc-snacks', [PageController::class, 'snacks'])->name('snacks');
+Route::get('/support/faq', [PageController::class, 'faq'])->name('support.faq');
+Route::get('/support/contact', [PageController::class, 'contact'])->name('support.contact');
+Route::get('/support/feedback', [PageController::class, 'feedback'])->name('support.feedback');
+
 // Authentication Routes
 Route::get('login', [App\Http\Controllers\Auth\LoginController::class, 'showLoginForm'])->name('login');
 Route::post('login', [App\Http\Controllers\Auth\LoginController::class, 'login']);
@@ -39,6 +49,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/bookings/payment', [BookingController::class, 'paymentPage'])->name('bookings.payment');
     Route::post('/bookings/store', [BookingController::class, 'storeBooking'])->name('bookings.store');
     Route::get('/bookings/success/{id}', [BookingController::class, 'bookingSuccess'])->name('bookings.success');
+    Route::post('/snacks/confirm', [BookingController::class, 'confirmSnacks'])->name('snacks.confirm');
+    Route::get('/snacks/payment', [BookingController::class, 'snacksPayment'])->name('snacks.payment');
+    Route::post('/snacks/store', [BookingController::class, 'storeSnackOrder'])->name('snacks.store');
     Route::get('/ticket-history', [BookingController::class, 'ticketHistory'])->name('bookings.history');
     Route::get('/my-bookings', [BookingController::class, 'ticketHistory'])->name('bookings.my-bookings');
     Route::get('/bookings/exchange', [BookingController::class, 'exchangeDashboard'])->name('bookings.exchange-dashboard');
