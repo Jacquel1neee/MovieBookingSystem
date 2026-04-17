@@ -180,7 +180,7 @@
                         <a href="{{ route('admin.showtimes.create') }}" class="btn btn-outline-danger text-start">
                             <i class="bi bi-plus-circle me-2"></i>Create Showtime
                         </a>
-                        <a href="{{ route('admin.manage-admins') }}" class="btn btn-outline-info text-start">
+                        <a href="{{ route('admin.manage-admins') }}" class="btn btn-outline-danger text-start">
                             <i class="bi bi-people me-2"></i>Manage Admin
                         </a>
                         <a href="{{ route('admin.exchange-requests.index') }}" class="btn btn-outline-warning text-start">
