@@ -41,13 +41,13 @@
                             <td>${{ number_format($showtime->price, 2) }}</td>
                             <td>
                                 <a href="{{ route('admin.showtimes.edit', $showtime) }}" class="btn btn-sm btn-warning">
-                                    <i class="bi bi-pencil"></i>
+                                    <i class="bi bi-pencil"></i> Edit
                                 </a>
                                 <form action="{{ route('admin.showtimes.destroy', $showtime) }}" method="POST" class="d-inline">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure? This will affect existing bookings.')">
-                                        <i class="bi bi-trash"></i>
+                                        <i class="bi bi-trash"></i> Delete
                                     </button>
                                 </form>
                             </td>

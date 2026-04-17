@@ -6,14 +6,9 @@
 <div class="container-fluid bg-danger py-4 mb-4">
     <div class="container">
         <div class="row align-items-center">
-            <div class="col-12 col-md-8">
+            <div class="col-12">
                 <h1 class="text-white fw-bold mb-2">Manage Admin Privileges</h1>
                 <p class="text-white-50 mb-0">Assign or revoke administrator rights</p>
-            </div>
-            <div class="col-12 col-md-4 text-md-end mt-3 mt-md-0">
-                <a href="{{ route('admin.dashboard') }}" class="btn btn-light fw-bold text-danger">
-                    <i class="bi bi-check-circle me-1"></i> Done
-                </a>
             </div>
         </div>
     </div>
@@ -146,6 +141,15 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Done / Back to Dashboard button at the bottom -->
+    <div class="row mt-4">
+        <div class="col-12 text-center">
+            <a href="{{ route('admin.dashboard') }}" class="btn btn-danger btn-lg px-5 shadow-sm">
+                <i class="bi bi-check-circle me-2"></i> Done, Back to Dashboard
+            </a>
         </div>
     </div>
 </div>

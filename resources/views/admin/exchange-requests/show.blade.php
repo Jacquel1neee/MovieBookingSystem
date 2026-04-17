@@ -21,7 +21,7 @@
                         <div class="col-md-6">
                             <strong>User:</strong> {{ $exchangeRequest->user->name }}<br>
                             <strong>Email:</strong> {{ $exchangeRequest->user->email }}<br>
-                            <strong>Request Date:</strong> {{ $exchangeRequest->created_at->format('F j, Y h:i A') }}<br>
+                            <strong>Request Date:</strong> {{ $exchangeRequest->created_at ? $exchangeRequest->created_at->format('F j, Y h:i A') : 'N/A' }}<br>
                             <strong>Status:</strong> 
                             <span class="badge bg-{{ $exchangeRequest->status == 'approved' ? 'success' : ($exchangeRequest->status == 'rejected' ? 'danger' : 'warning') }}">
                                 {{ $exchangeRequest->status }}

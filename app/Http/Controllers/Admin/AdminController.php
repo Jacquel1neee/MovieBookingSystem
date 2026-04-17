@@ -47,10 +47,41 @@ class AdminController extends Controller
         $revenueToday = Booking::whereDate('created_at', Carbon::today())
                               ->where('payment_status', 'paid')
                               ->sum('total_amount');
+                              
+        $revenueThisWeek = Booking::whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])
+                              ->where('payment_status', 'paid')
+                              ->sum('total_amount');
+                              
+        $revenueThisMonth = Booking::whereMonth('created_at', Carbon::now()->month)
+                               ->whereYear('created_at', Carbon::now()->year)
+                               ->where('payment_status', 'paid')
+                               ->sum('total_amount');
+
+        // Fetch daily revenue for the current week to show in the graph
+        $weeklyRevenue = [];
+        $maxRevenue = 0;
+        for ($i = 0; $i < 7; $i++) {
+            $date = Carbon::now()->startOfWeek()->addDays($i);
+            $amount = Booking::whereDate('created_at', $date)
+                ->where('payment_status', 'paid')
+                ->sum('total_amount');
+            
+            $weeklyRevenue[] = [
+                'day' => $date->format('D'),
+                'amount' => $amount
+            ];
+            $maxRevenue = max($maxRevenue, $amount);
+        }
+        $maxRevenue = $maxRevenue > 0 ? $maxRevenue : 1; // Prevent division by zero
+
+        $todayShowtimes = \App\Models\Showtime::with(['movie', 'hall', 'bookings.seats'])
+            ->whereDate('start_time', Carbon::today())
+            ->orderBy('start_time', 'asc')
+            ->get();
         
         return view('admin.dashboard', compact(
             'totalMovies', 'totalBookings', 'totalUsers', 'pendingExchanges',
-            'recentBookings', 'recentExchanges', 'revenueToday'
+            'recentBookings', 'recentExchanges', 'revenueToday', 'revenueThisWeek', 'revenueThisMonth', 'weeklyRevenue', 'maxRevenue', 'todayShowtimes'
         ));
     }
 

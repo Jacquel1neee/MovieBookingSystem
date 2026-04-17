@@ -128,36 +128,38 @@
                         <div class="col-6 col-md-4">
                             <div class="text-center p-3 bg-light rounded">
                                 <small class="text-muted d-block">This Week</small>
-                                <span class="h5 fw-bold">RM 15,280.50</span>
+                                <span class="h5 fw-bold">RM {{ number_format($revenueThisWeek ?? 0, 2) }}</span>
                             </div>
                         </div>
                         <div class="col-6 col-md-4">
                             <div class="text-center p-3 bg-light rounded">
                                 <small class="text-muted d-block">This Month</small>
-                                <span class="h5 fw-bold">RM 45,920.00</span>
+                                <span class="h5 fw-bold">RM {{ number_format($revenueThisMonth ?? 0, 2) }}</span>
                             </div>
                         </div>
                     </div>
                     
-                    <!-- Simple Chart Placeholder -->
+                    <!-- Dynamic Chart -->
                     <div class="mt-4">
                         <div class="d-flex justify-content-between align-items-end" style="height: 150px;">
-                            <div style="width: 12%; height: 60px;" class="bg-danger bg-opacity-25 rounded"></div>
-                            <div style="width: 12%; height: 85px;" class="bg-danger bg-opacity-50 rounded"></div>
-                            <div style="width: 12%; height: 45px;" class="bg-danger bg-opacity-25 rounded"></div>
-                            <div style="width: 12%; height: 110px;" class="bg-danger rounded"></div>
-                            <div style="width: 12%; height: 75px;" class="bg-danger bg-opacity-75 rounded"></div>
-                            <div style="width: 12%; height: 95px;" class="bg-danger bg-opacity-50 rounded"></div>
-                            <div style="width: 12%; height: 65px;" class="bg-danger bg-opacity-25 rounded"></div>
+                            @foreach($weeklyRevenue as $data)
+                                @php
+                                    $heightPercent = max(($data['amount'] / $maxRevenue) * 100, 2); // At least 2% height so it's visible
+                                    $opacityClass = $data['amount'] > 0 ? 'bg-opacity-75' : 'bg-opacity-25';
+                                    if ($data['amount'] == $maxRevenue && $maxRevenue > 1) {
+                                        $opacityClass = ''; // Highest gets full opacity
+                                    }
+                                @endphp
+                                <div style="width: 12%; height: {{ $heightPercent }}%; cursor: pointer;" 
+                                     class="bg-danger {{ $opacityClass }} rounded"
+                                     title="RM {{ number_format($data['amount'], 2) }}">
+                                </div>
+                            @endforeach
                         </div>
                         <div class="d-flex justify-content-between mt-2">
-                            <small class="text-muted">Mon</small>
-                            <small class="text-muted">Tue</small>
-                            <small class="text-muted">Wed</small>
-                            <small class="text-muted">Thu</small>
-                            <small class="text-muted">Fri</small>
-                            <small class="text-muted">Sat</small>
-                            <small class="text-muted">Sun</small>
+                            @foreach($weeklyRevenue as $data)
+                                <small class="text-muted text-center" style="width: 12%;">{{ $data['day'] }}</small>
+                            @endforeach
                         </div>
                     </div>
                 </div>
@@ -333,48 +335,32 @@
                 </div>
                 <div class="card-body">
                     <div class="row g-3">
-                        <div class="col-12 col-md-4">
-                            <div class="border rounded p-3">
-                                <div class="d-flex gap-3">
-                                    <div class="bg-danger bg-opacity-10 p-2 rounded">
-                                        <i class="bi bi-film text-danger"></i>
-                                    </div>
-                                    <div>
-                                        <h6 class="fw-bold mb-1">Dune: Part Two</h6>
-                                        <small class="text-muted d-block">Hall 1 - 10:30 AM</small>
-                                        <small class="text-muted">45 seats available</small>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-12 col-md-4">
-                            <div class="border rounded p-3">
-                                <div class="d-flex gap-3">
-                                    <div class="bg-danger bg-opacity-10 p-2 rounded">
-                                        <i class="bi bi-film text-danger"></i>
-                                    </div>
-                                    <div>
-                                        <h6 class="fw-bold mb-1">Oppenheimer</h6>
-                                        <small class="text-muted d-block">Hall 2 - 1:00 PM</small>
-                                        <small class="text-muted">28 seats available</small>
+                        @forelse($todayShowtimes as $showtime)
+                            <div class="col-12 col-md-4">
+                                <div class="border rounded p-3">
+                                    <div class="d-flex gap-3">
+                                        <div class="bg-danger bg-opacity-10 p-2 rounded">
+                                            <i class="bi bi-film text-danger"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="fw-bold mb-1">{{ $showtime->movie->title }}</h6>
+                                            <small class="text-muted d-block">{{ $showtime->hall->name }} - {{ $showtime->start_time->format('h:i A') }}</small>
+                                            <small class="text-muted">
+                                                @php
+                                                    $availableSeats = $showtime->hall->total_seats - count($showtime->getBookedSeats());
+                                                @endphp
+                                                {{ $availableSeats }} seats available
+                                            </small>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="col-12 col-md-4">
-                            <div class="border rounded p-3">
-                                <div class="d-flex gap-3">
-                                    <div class="bg-danger bg-opacity-10 p-2 rounded">
-                                        <i class="bi bi-film text-danger"></i>
-                                    </div>
-                                    <div>
-                                        <h6 class="fw-bold mb-1">Poor Things</h6>
-                                        <small class="text-muted d-block">Hall 3 - 4:30 PM</small>
-                                        <small class="text-muted">52 seats available</small>
-                                    </div>
-                                </div>
+                        @empty
+                            <div class="col-12 text-center text-muted p-4">
+                                <i class="bi bi-calendar-x fs-1 d-block mb-2"></i>
+                                No showtimes scheduled for today.
                             </div>
-                        </div>
+                        @endforelse
                     </div>
                 </div>
             </div>

@@ -31,7 +31,7 @@
                                 <strong>Showtime:</strong> {{ $booking->showtime->start_time->format('l, F j, Y h:i A') }}<br>
                                 <strong>Hall:</strong> {{ $booking->showtime->hall->name }}<br>
                                 <strong>Total Seats:</strong> {{ $booking->total_seats }}<br>
-                                <strong>Total Amount:</strong> ${{ number_format($booking->total_amount, 2) }}
+                                <strong>Total Amount:</strong> ${{ number_format($booking->seats->sum('pivot.price'), 2) }}
                             </p>
                         </div>
                     </div>
@@ -100,11 +100,11 @@
                     <ul class="list-group list-group-flush">
                         <li class="list-group-item d-flex justify-content-between">
                             <span>Subtotal:</span>
-                            <strong>${{ number_format($booking->total_amount, 2) }}</strong>
+                            <strong>${{ number_format($booking->seats->sum('pivot.price'), 2) }}</strong>
                         </li>
                         <li class="list-group-item d-flex justify-content-between">
                             <span>Total:</span>
-                            <strong>${{ number_format($booking->total_amount, 2) }}</strong>
+                            <strong>${{ number_format($booking->seats->sum('pivot.price'), 2) }}</strong>
                         </li>
                     </ul>
                 </div>

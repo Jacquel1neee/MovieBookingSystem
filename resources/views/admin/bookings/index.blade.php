@@ -55,7 +55,7 @@
                             <td>{{ $booking->showtime->movie->title }}</td>
                             <td>{{ $booking->showtime->start_time->format('M d, h:i A') }}</td>
                             <td>{{ $booking->total_seats }}</td>
-                            <td>${{ number_format($booking->total_amount, 2) }}</td>
+                            <td>${{ number_format($booking->seats->sum('pivot.price'), 2) }}</td>
                             <td>
                                 <span class="badge bg-{{ $booking->status == 'paid' ? 'success' : ($booking->status == 'cancelled' ? 'danger' : 'warning') }}">
                                     {{ $booking->status }}
