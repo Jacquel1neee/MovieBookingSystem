@@ -41,7 +41,7 @@
                             <a class="nav-link" href="{{ route('snacks') }}">Snacks</a>
                         </li>
                         
-                        @if(auth()->user()->is_admin)
+                        @if(auth()->user()?->is_admin)
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ route('admin.dashboard') }}">Admin Dashboard</a>
                             </li>
