@@ -66,6 +66,23 @@
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
+                        <div class="mb-3">
+                            <label for="poster_image" class="form-label">Upload Poster</label>
+                            <input type="file" class="form-control @error('poster_image') is-invalid @enderror" 
+                                   id="poster_image" name="poster_image" accept="image/*">
+                            @error('poster_image')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                            <small class="text-muted">Upload a local file instead of a URL.</small>
+                        </div>
+                        @if($movie->poster)
+                            <div class="mb-3">
+                                <label class="form-label">Current Poster</label>
+                                <div>
+                                    <img src="{{ $movie->poster_url }}" class="img-fluid rounded" alt="{{ $movie->title }}">
+                                </div>
+                            </div>
+                        @endif
                     </div>
                 </div>
                 

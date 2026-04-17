@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class Movie extends Model
 {
@@ -25,6 +26,19 @@ class Movie extends Model
         'release_date' => 'date',
         'is_showing' => 'boolean',
     ];
+
+    public function getPosterUrlAttribute()
+    {
+        if (!$this->poster) {
+            return null;
+        }
+
+        if (Str::startsWith($this->poster, ['http://', 'https://'])) {
+            return $this->poster;
+        }
+
+        return asset('storage/' . ltrim($this->poster, '/'));
+    }
 
     public function showtimes()
     {

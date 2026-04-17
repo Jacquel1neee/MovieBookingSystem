@@ -23,6 +23,7 @@
                         <tr>
                             <th>ID</th>
                             <th>Name</th>
+                            <th>Experience</th>
                             <th>Rows</th>
                             <th>Columns</th>
                             <th>Total Seats</th>
@@ -34,6 +35,7 @@
                         <tr>
                             <td>{{ $hall->id }}</td>
                             <td>{{ $hall->name }}</td>
+                            <td>{{ $hall->experience_type ?? 'Standard' }}</td>
                             <td>{{ $hall->rows }}</td>
                             <td>{{ $hall->columns }}</td>
                             <td>{{ $hall->total_seats }}</td>

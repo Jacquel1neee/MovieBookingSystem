@@ -15,12 +15,13 @@
 
     <!-- Scripts -->
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
+    @stack('styles')
 </head>
 <body>
     <div id="app">
         <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
             <div class="container">
-                <a class="navbar-brand" href="{{ url('/') }}">
+                <a class="navbar-brand" href="{{ auth()->check() && auth()->user()->is_admin && request()->is('admin*') ? route('admin.dashboard') : route('home') }}">
                     {{ config('app.name', 'Laravel') }}
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
@@ -30,7 +31,21 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <!-- Left Side Of Navbar -->
                     <ul class="navbar-nav me-auto">
-
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('home') }}">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('promotions') }}">Promotions</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('snacks') }}">Snacks</a>
+                        </li>
+                        
+                        @if(auth()->user()->is_admin)
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ route('admin.dashboard') }}">Admin Dashboard</a>
+                            </li>
+                        @endif
                     </ul>
 
                     <!-- Right Side Of Navbar -->
@@ -72,9 +87,18 @@
             </div>
         </nav>
 
+        @if(!request()->routeIs('home') && !request()->routeIs('login') && !request()->routeIs('register') && !request()->routeIs('admin.dashboard'))
+            <div class="container py-2">
+                <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm me-2">
+                    <i class="bi bi-arrow-left"></i> Back
+                </a>
+            </div>
+        @endif
+
         <main class="py-4">
             @yield('content')
         </main>
     </div>
+    @stack('scripts')
 </body>
 </html>

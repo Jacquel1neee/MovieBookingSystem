@@ -23,6 +23,20 @@
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
+                <div class="mb-3">
+                    <label for="experience_type" class="form-label">GSC Experience Type</label>
+                    <select id="experience_type" name="experience_type" class="form-select @error('experience_type') is-invalid @enderror" required>
+                        <option value="">Choose experience</option>
+                        <option value="Dolby Atmos" {{ old('experience_type') == 'Dolby Atmos' ? 'selected' : '' }}>Dolby Atmos</option>
+                        <option value="IMAX" {{ old('experience_type') == 'IMAX' ? 'selected' : '' }}>IMAX</option>
+                        <option value="Gold Class" {{ old('experience_type') == 'Gold Class' ? 'selected' : '' }}>Gold Class</option>
+                        <option value="On Stage" {{ old('experience_type') == 'On Stage' ? 'selected' : '' }}>On Stage</option>
+                        <option value="Standard" {{ old('experience_type') == 'Standard' ? 'selected' : '' }}>Standard</option>
+                    </select>
+                    @error('experience_type')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
                 
                 <div class="row">
                     <div class="col-md-6">

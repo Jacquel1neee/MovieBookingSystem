@@ -14,7 +14,7 @@
                     <div class="row mb-4">
                         <div class="col-md-4">
                             @if($showtime->movie->poster)
-                                <img src="{{ $showtime->movie->poster }}" class="img-fluid rounded" alt="{{ $showtime->movie->title }}">
+                                <img src="{{ $showtime->movie->poster_url }}" class="img-fluid rounded" alt="{{ $showtime->movie->title }}">
                             @endif
                         </div>
                         <div class="col-md-8">
@@ -57,14 +57,19 @@
                     </div>
                     
                     <div class="alert alert-info">
-                        <i class="bi bi-info-circle"></i> This is a demo - no actual payment will be processed.
+                        <i class="bi bi-info-circle"></i> This is a demo flow. Proceed to the mock payment page to complete your booking.
                     </div>
                     
-                    <form action="{{ route('bookings.store') }}" method="POST">
-                        @csrf
+                    <form action="{{ route('bookings.payment') }}" method="GET">
                         <div class="d-flex justify-content-between">
                             <a href="{{ route('bookings.select-seats', $showtime->id) }}" class="btn btn-secondary">Back to Seat Selection</a>
-                            <button type="submit" class="btn btn-success">Confirm Booking</button>
+                            <div>
+                                <a href="{{ route('snacks', ['source' => 'booking']) }}" class="btn btn-warning me-2">Add Snacks</a>
+                                <button type="submit" class="btn btn-primary">Proceed to Payment</button>
+                            </div
+                                <a href="{{ route('snacks', ['source' => 'booking']) }}" class="btn btn-warning me-2">Add Snacks</a>
+                                <button type="submit" class="btn btn-primary">Proceed to Payment</button>
+                            </div>
                         </div>
                     </form>
                 </div>

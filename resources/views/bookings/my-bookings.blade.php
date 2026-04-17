@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'My Bookings - GSC Cinemas')
+@section('title', ($pageTitle ?? 'My Bookings') . ' - GSC Cinemas')
 
 @section('content')
 <!-- Page Header -->
@@ -8,7 +8,7 @@
     <div class="container">
         <div class="row align-items-center">
             <div class="col-12">
-                <h1 class="text-white fw-bold mb-2">My Bookings</h1>
+                <h1 class="text-white fw-bold mb-2">{{ $pageTitle ?? 'My Bookings' }}</h1>
                 <p class="text-white-50 mb-0">View and manage your movie tickets</p>
             </div>
         </div>
@@ -98,13 +98,23 @@
     <div class="row">
         <div class="col-12">
             @forelse($bookings as $booking)
-            <div class="card mb-3 border-0 shadow-sm">
+            @php
+                $rowClass = 'border-0 shadow-sm';
+                if ($booking->status == 'paid') {
+                    $rowClass = 'border-success shadow-sm';
+                } elseif ($booking->status == 'completed') {
+                    $rowClass = 'border-secondary shadow-sm';
+                } elseif ($booking->status == 'cancelled') {
+                    $rowClass = 'border-danger shadow-sm';
+                }
+            @endphp
+            <div class="card mb-3 {{ $rowClass }}">
                 <div class="card-body">
                     <div class="row g-3">
                         <!-- Movie Poster (visible on larger screens) -->
                         <div class="col-md-2 d-none d-md-block">
                             @if($booking->showtime->movie->poster)
-                                <img src="{{ $booking->showtime->movie->poster }}" class="img-fluid" alt="{{ $booking->showtime->movie->title }}" style="border-radius: 5px;">
+                                <img src="{{ $booking->showtime->movie->poster_url }}" class="img-fluid" alt="{{ $booking->showtime->movie->title }}" style="border-radius: 5px;">
                             @else
                                 <div class="bg-secondary d-flex align-items-center justify-content-center" style="height: 120px;">
                                     <i class="bi bi-film text-white"></i>
@@ -163,12 +173,6 @@
                                 <i class="bi bi-eye me-2"></i>View Details
                             </a>
                             
-                            @if($booking->status == 'paid' && $booking->showtime->start_time > now())
-                                <button class="btn btn-outline-warning w-100" data-bs-toggle="modal" data-bs-target="#exchangeModal{{ $booking->id }}">
-                                    <i class="bi bi-arrow-repeat me-2"></i>Exchange
-                                </button>
-                            @endif
-                            
                             <!-- QR Code Button -->
                             <button class="btn btn-outline-secondary w-100" data-bs-toggle="modal" data-bs-target="#qrModal{{ $booking->id }}">
                                 <i class="bi bi-qr-code me-2"></i>Show QR
@@ -178,41 +182,6 @@
                 </div>
             </div>
 
-            <!-- Exchange Modal for this booking -->
-            <div class="modal fade" id="exchangeModal{{ $booking->id }}" tabindex="-1">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">Exchange Tickets</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                        </div>
-                        <form action="{{ route('bookings.request-exchange', $booking->id) }}" method="POST">
-                            @csrf
-                            <div class="modal-body">
-                                <div class="mb-3">
-                                    <label class="form-label">Select New Showtime</label>
-                                    <select name="new_showtime_id" class="form-select" required>
-                                        <option value="">Choose...</option>
-                                        @foreach(App\Models\Showtime::where('start_time', '>', now())->get() as $showtime)
-                                            <option value="{{ $showtime->id }}">
-                                                {{ $showtime->movie->title }} - {{ $showtime->start_time->format('d M h:i A') }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label">Reason</label>
-                                    <textarea name="reason" class="form-control" rows="3" required></textarea>
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                <button type="submit" class="btn btn-warning">Submit Request</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
 
             <!-- QR Modal -->
             <div class="modal fade" id="qrModal{{ $booking->id }}" tabindex="-1">

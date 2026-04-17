@@ -35,12 +35,14 @@ class HallController extends Controller
     {
         $request->validate([
             'name' => 'required|unique:halls|max:255',
+            'experience_type' => 'required|string|max:255',
             'rows' => 'required|integer|min:1|max:26',
             'columns' => 'required|integer|min:1|max:50',
         ]);
         
         $hall = Hall::create([
             'name' => $request->name,
+            'experience_type' => $request->experience_type,
             'rows' => $request->rows,
             'columns' => $request->columns,
             'total_seats' => $request->rows * $request->columns
@@ -57,7 +59,7 @@ class HallController extends Controller
                     'row' => $row,
                     'column' => $col,
                     'seat_number' => $seatNumber,
-                    'type' => ($row <= 2) ? 'vip' : 'regular' // First 2 rows as VIP
+                    'type' => ($row == $request->rows) ? 'vip' : 'regular' // Last row is VIP
                 ]);
             }
         }
@@ -75,9 +77,10 @@ class HallController extends Controller
     {
         $request->validate([
             'name' => 'required|max:255|unique:halls,name,' . $hall->id,
+            'experience_type' => 'required|string|max:255',
         ]);
         
-        $hall->update($request->only('name'));
+        $hall->update($request->only('name', 'experience_type'));
         
         return redirect()->route('admin.halls.index')
                         ->with('success', 'Hall updated successfully.');

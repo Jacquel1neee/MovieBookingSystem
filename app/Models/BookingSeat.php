@@ -5,42 +5,23 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Booking extends Model
+class BookingSeat extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'booking_number', 'user_id', 'showtime_id', 'total_seats', 'total_amount', 'status', 'payment_status'
+        'booking_id',
+        'seat_id',
+        'price'
     ];
 
-    protected static function boot()
+    public function booking()
     {
-        parent::boot();
-        
-        static::creating(function ($booking) {
-            $booking->booking_number = 'BK' . strtoupper(uniqid());
-        });
+        return $this->belongsTo(Booking::class);
     }
 
-    public function user()
+    public function seat()
     {
-        return $this->belongsTo(User::class);
-    }
-
-    public function showtime()
-    {
-        return $this->belongsTo(Showtime::class);
-    }
-
-    public function seats()
-    {
-        return $this->belongsToMany(Seat::class, 'booking_seats')
-                    ->withPivot('price')
-                    ->withTimestamps();
-    }
-
-    public function exchangeRequests()
-    {
-        return $this->hasMany(ExchangeRequest::class);
+        return $this->belongsTo(Seat::class);
     }
 }

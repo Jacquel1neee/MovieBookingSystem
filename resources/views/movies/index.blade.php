@@ -61,7 +61,7 @@
                 <!-- Movie Poster -->
                 <div class="position-relative">
                     @if($movie->poster)
-                        <img src="{{ $movie->poster }}" class="card-img-top" alt="{{ $movie->title }}" style="aspect-ratio: 2/3; object-fit: cover;">
+                        <img src="{{ $movie->poster_url }}" class="card-img-top" alt="{{ $movie->title }}" style="aspect-ratio: 2/3; object-fit: cover;">
                     @else
                         <div class="bg-secondary d-flex align-items-center justify-content-center" style="aspect-ratio: 2/3;">
                             <i class="bi bi-film text-white" style="font-size: 4rem;"></i>

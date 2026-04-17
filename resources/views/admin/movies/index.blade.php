@@ -36,7 +36,7 @@
                             <td>{{ $movie->id }}</td>
                             <td>
                                 @if($movie->poster)
-                                    <img src="{{ $movie->poster }}" alt="{{ $movie->title }}" style="height: 50px;">
+                                    <img src="{{ $movie->poster_url }}" alt="{{ $movie->title }}" style="height: 50px;">
                                 @else
                                     <i class="bi bi-film fs-3"></i>
                                 @endif

@@ -38,10 +38,19 @@ class MovieController extends Controller
             'duration' => 'required|integer|min:1',
             'release_date' => 'required|date',
             'poster' => 'nullable|url',
+            'poster_image' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:5120',
             'is_showing' => 'boolean'
         ]);
+
+        $data = $request->only(['title', 'description', 'duration', 'release_date', 'is_showing']);
+
+        if ($request->hasFile('poster_image')) {
+            $data['poster'] = $request->file('poster_image')->store('posters', 'public');
+        } elseif ($request->filled('poster')) {
+            $data['poster'] = $request->poster;
+        }
         
-        Movie::create($request->all());
+        Movie::create($data);
         
         return redirect()->route('admin.movies.index')
                         ->with('success', 'Movie created successfully.');
@@ -60,10 +69,19 @@ class MovieController extends Controller
             'duration' => 'required|integer|min:1',
             'release_date' => 'required|date',
             'poster' => 'nullable|url',
+            'poster_image' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:5120',
             'is_showing' => 'boolean'
         ]);
+
+        $data = $request->only(['title', 'description', 'duration', 'release_date', 'is_showing']);
+
+        if ($request->hasFile('poster_image')) {
+            $data['poster'] = $request->file('poster_image')->store('posters', 'public');
+        } elseif ($request->filled('poster')) {
+            $data['poster'] = $request->poster;
+        }
         
-        $movie->update($request->all());
+        $movie->update($data);
         
         return redirect()->route('admin.movies.index')
                         ->with('success', 'Movie updated successfully.');
