@@ -50,26 +50,8 @@
                             </li>
                             <li class="list-group-item d-flex justify-content-between">
                                 <span>Total amount</span>
-                                <strong>RM {{ number_format($combinedTotal
-                                <span>Payment method</span>
-                                <strong>Demo Checkout</strong>
+                                <strong>RM {{ number_format($combinedTotal, 2) }}</strong>
                             </li>
-                            <li class="list-group-item d-flex justify-content-between">
-                    @if($snackData)
-                        <div class="alert alert-success">
-                            <h6 class="mb-2">Selected Snack Combos</h6>
-                            <ul class="mb-2">
-                                @foreach($snackData['items'] as $item)
-                                    <li>{{ $item['quantity'] }} × {{ $item['name'] }} — RM {{ number_format($item['subtotal'], 2) }}</li>
-                                @endforeach
-                            </ul>
-                            <strong>Snack total:</strong> RM {{ number_format($snackData['total_amount'], 2) }}
-                        </div>
-                    @else
-                        <div class="alert alert-secondary">
-                            Want snacks with your booking? Visit the <a href="{{ route('snacks') }}" class="link-danger">GSC Snacks</a> page before payment.
-                        </div>
-                    @endif  </li>
                         </ul>
                     </div>
 
