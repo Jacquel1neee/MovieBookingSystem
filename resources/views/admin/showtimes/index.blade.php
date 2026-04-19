@@ -27,6 +27,7 @@
                             <th>Start Time</th>
                             <th>End Time</th>
                             <th>Price</th>
+                            <th>VIP Price</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -39,6 +40,7 @@
                             <td>{{ $showtime->start_time->format('M d, Y h:i A') }}</td>
                             <td>{{ $showtime->end_time->format('M d, Y h:i A') }}</td>
                             <td>${{ number_format($showtime->price, 2) }}</td>
+                            <td>${{ number_format($showtime->vip_price, 2) }}</td>
                             <td>
                                 <a href="{{ route('admin.showtimes.edit', $showtime) }}" class="btn btn-sm btn-warning">
                                     <i class="bi bi-pencil"></i> Edit

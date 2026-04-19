@@ -49,7 +49,7 @@
                             <td>{{ $request->created_at->format('M d, Y') }}</td>
                             <td>
                                 <a href="{{ route('admin.exchange-requests.show', $request) }}" class="btn btn-sm btn-info">
-                                    <i class="bi bi-eye"></i>
+                                    <i class="bi bi-eye"></i> View
                                 </a>
                             </td>
                         </tr>

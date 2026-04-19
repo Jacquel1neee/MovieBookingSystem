@@ -1,16 +1,16 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\HomeController;
-use App\Http\Controllers\MovieController;
-use App\Http\Controllers\BookingController;
-use App\Http\Controllers\PageController;
 use App\Http\Controllers\Admin\AdminController;
-use App\Http\Controllers\Admin\MovieController as AdminMovieController;
-use App\Http\Controllers\Admin\HallController as AdminHallController;
-use App\Http\Controllers\Admin\ShowtimeController as AdminShowtimeController;
 use App\Http\Controllers\Admin\BookingController as AdminBookingController;
 use App\Http\Controllers\Admin\ExchangeRequestController as AdminExchangeRequestController;
+use App\Http\Controllers\Admin\HallController as AdminHallController;
+use App\Http\Controllers\Admin\MovieController as AdminMovieController;
+use App\Http\Controllers\Admin\ShowtimeController as AdminShowtimeController;
+use App\Http\Controllers\BookingController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\MovieController;
+use App\Http\Controllers\PageController;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -66,23 +66,23 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
     Route::get('/manage-admins', [AdminController::class, 'manageAdmins'])->name('manage-admins');
     Route::post('/users/{user}/toggle-admin', [AdminController::class, 'toggleAdmin'])->name('toggle-admin');
-    
+
     // Movie management
     Route::resource('movies', AdminMovieController::class);
-    
+
     // Hall management
     Route::resource('halls', AdminHallController::class);
     Route::get('/halls/{hall}/seats', [AdminHallController::class, 'seats'])->name('halls.seats');
     Route::post('/halls/{hall}/seats', [AdminHallController::class, 'updateSeats'])->name('halls.update-seats');
-    
+
     // Showtime management
     Route::resource('showtimes', AdminShowtimeController::class);
-    
+
     // Booking management
     Route::get('/bookings', [AdminBookingController::class, 'index'])->name('bookings.index');
     Route::get('/bookings/{booking}', [AdminBookingController::class, 'show'])->name('bookings.show');
     Route::post('/bookings/{booking}/status', [AdminBookingController::class, 'updateStatus'])->name('bookings.update-status');
-    
+
     // Exchange request management
     Route::get('/exchange-requests', [AdminExchangeRequestController::class, 'index'])->name('exchange-requests.index');
     Route::get('/exchange-requests/{exchangeRequest}', [AdminExchangeRequestController::class, 'show'])->name('exchange-requests.show');

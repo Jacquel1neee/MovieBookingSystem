@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Movie;
 use App\Models\Showtime;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 
 class MovieController extends Controller
 {
@@ -17,13 +17,13 @@ class MovieController extends Controller
             $query->where('release_date', '>', now()->format('Y-m-d'));
         } else {
             $query->where('is_showing', true)
-                  ->where('release_date', '<=', now()->format('Y-m-d'));
+                ->where('release_date', '<=', now()->format('Y-m-d'));
         }
-        
+
         if ($request->has('search')) {
-            $query->where('title', 'like', '%' . $request->search . '%');
+            $query->where('title', 'like', '%'.$request->search.'%');
         }
-        
+
         if ($request->has('sort')) {
             switch ($request->sort) {
                 case 'title_asc':
@@ -44,12 +44,12 @@ class MovieController extends Controller
         } else {
             $query->orderBy('release_date', 'desc');
         }
-        
+
         $movies = $query->paginate(12);
-        
+
         return view('movies.index', compact('movies'));
     }
-    
+
     public function show(Request $request, $id)
     {
         $movie = Movie::findOrFail($id);
@@ -65,18 +65,18 @@ class MovieController extends Controller
         for ($i = 0; $i < 7; $i++) {
             $date = Carbon::now()->addDays($i)->format('Y-m-d');
             $showtimes = Showtime::where('movie_id', $movie->id)
-                                ->whereDate('start_time', $date)
-                                ->with('hall')
-                                ->orderBy('start_time')
-                                ->get();
-            
+                ->whereDate('start_time', $date)
+                ->with('hall')
+                ->orderBy('start_time')
+                ->get();
+
             $dates[] = [
                 'date' => $date,
                 'formatted_date' => Carbon::parse($date)->format('l, F j, Y'),
-                'showtimes' => $showtimes
+                'showtimes' => $showtimes,
             ];
         }
-        
+
         return view('movies.show', compact('movie', 'dates', 'selectedDate'));
     }
 }

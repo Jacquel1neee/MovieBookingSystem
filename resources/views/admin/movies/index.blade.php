@@ -51,13 +51,13 @@
                             </td>
                             <td>
                                 <a href="{{ route('admin.movies.edit', $movie) }}" class="btn btn-sm btn-warning">
-                                    <i class="bi bi-pencil"></i>
+                                    <i class="bi bi-pencil"></i> Edit
                                 </a>
                                 <form action="{{ route('admin.movies.destroy', $movie) }}" method="POST" class="d-inline">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')">
-                                        <i class="bi bi-trash"></i>
+                                        <i class="bi bi-trash"></i> Delete
                                     </button>
                                 </form>
                             </td>

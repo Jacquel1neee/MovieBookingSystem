@@ -41,16 +41,16 @@
                             <td>{{ $hall->total_seats }}</td>
                             <td>
                                 <a href="{{ route('admin.halls.edit', $hall) }}" class="btn btn-sm btn-warning">
-                                    <i class="bi bi-pencil"></i>
+                                    <i class="bi bi-pencil"></i> Edit
                                 </a>
                                 <a href="{{ route('admin.halls.seats', $hall) }}" class="btn btn-sm btn-info">
-                                    <i class="bi bi-grid"></i>
+                                    <i class="bi bi-grid"></i> Seats
                                 </a>
                                 <form action="{{ route('admin.halls.destroy', $hall) }}" method="POST" class="d-inline">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure? This will delete all associated showtimes and seats.')">
-                                        <i class="bi bi-trash"></i>
+                                        <i class="bi bi-trash"></i> Delete
                                     </button>
                                 </form>
                             </td>

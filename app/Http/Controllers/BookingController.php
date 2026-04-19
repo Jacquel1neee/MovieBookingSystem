@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\Showtime;
-use App\Models\Seat;
 use App\Models\Booking;
 use App\Models\BookingSeat;
 use App\Models\ExchangeRequest;
+use App\Models\Seat;
+use App\Models\Showtime;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -17,7 +17,7 @@ class BookingController extends Controller
     {
         $this->middleware('auth');
     }
-    
+
     private function getSnackMenu()
     {
         return [
@@ -26,21 +26,21 @@ class BookingController extends Controller
                 'description' => 'Large popcorn with two drinks.',
                 'price' => 25.00,
                 'icon' => 'cup-straw',
-                'color' => 'danger'
+                'color' => 'danger',
             ],
             'nachos' => [
                 'name' => 'Nachos Combo',
                 'description' => 'Crispy nachos with cheese dip and soda.',
                 'price' => 18.00,
                 'icon' => 'egg-fried',
-                'color' => 'warning'
+                'color' => 'warning',
             ],
             'family' => [
                 'name' => 'Family Pack',
                 'description' => 'Family-sized popcorn, drinks and snacks.',
                 'price' => 45.00,
                 'icon' => 'shop-window',
-                'color' => 'success'
+                'color' => 'success',
             ],
         ];
     }
@@ -49,10 +49,10 @@ class BookingController extends Controller
     {
         $showtime = Showtime::with(['movie', 'hall', 'hall.seats'])->findOrFail($showtimeId);
         $bookedSeats = $showtime->getBookedSeats();
-        
+
         return view('bookings.select-seats', compact('showtime', 'bookedSeats'));
     }
-    
+
     public function confirmBooking(Request $request)
     {
         $seatIds = $request->input('seats');
@@ -69,30 +69,30 @@ class BookingController extends Controller
         $request->validate([
             'showtime_id' => 'required|exists:showtimes,id',
             'seats' => 'required|array|min:1',
-            'seats.*' => 'exists:seats,id'
+            'seats.*' => 'exists:seats,id',
         ]);
-        
+
         $showtime = Showtime::findOrFail($request->showtime_id);
         $bookedSeats = $showtime->getBookedSeats();
-        
+
         foreach ($request->seats as $seatId) {
             if (in_array($seatId, $bookedSeats)) {
                 return redirect()->back()->with('error', 'Some selected seats are no longer available.');
             }
         }
-        
+
         $seats = Seat::whereIn('id', $request->seats)->get();
         $totalAmount = count($seats) * $showtime->price;
-        
+
         session([
             'booking_data' => [
                 'showtime_id' => $showtime->id,
                 'seat_ids' => $request->seats,
                 'total_amount' => $totalAmount,
-                'total_seats' => count($seats)
-            ]
+                'total_seats' => count($seats),
+            ],
         ]);
-        
+
         return view('bookings.confirm', compact('showtime', 'seats', 'totalAmount'));
     }
 
@@ -132,7 +132,7 @@ class BookingController extends Controller
             'snack_data' => [
                 'items' => $items,
                 'total_amount' => $totalAmount,
-            ]
+            ],
         ]);
 
         if (session()->has('booking_data')) {
@@ -146,7 +146,7 @@ class BookingController extends Controller
     {
         $snackData = session('snack_data');
 
-        if (!$snackData) {
+        if (! $snackData) {
             return redirect()->route('snacks')->with('error', 'Please select a snack combo first.');
         }
 
@@ -157,7 +157,7 @@ class BookingController extends Controller
     {
         $snackData = session('snack_data');
 
-        if (!$snackData) {
+        if (! $snackData) {
             return redirect()->route('snacks')->with('error', 'Your snack selection expired. Please choose again.');
         }
 
@@ -173,7 +173,7 @@ class BookingController extends Controller
     {
         $bookingData = session('booking_data');
 
-        if (!$bookingData) {
+        if (! $bookingData) {
             return redirect()->route('movies.index')->with('error', 'Booking session expired.');
         }
 
@@ -188,8 +188,8 @@ class BookingController extends Controller
     public function exchangePage($id)
     {
         $booking = Booking::with(['showtime.movie', 'showtime.hall', 'seats'])
-                         ->where('user_id', Auth::id())
-                         ->findOrFail($id);
+            ->where('user_id', Auth::id())
+            ->findOrFail($id);
 
         $showtimes = Showtime::with(['hall.seats'])
             ->where('movie_id', $booking->showtime->movie_id)
@@ -199,31 +199,32 @@ class BookingController extends Controller
             ->get();
 
         $pageTitle = 'Exchange Ticket';
+
         return view('bookings.exchange', compact('booking', 'showtimes', 'pageTitle'));
     }
 
     public function storeBooking(Request $request)
     {
         $bookingData = session('booking_data');
-        
-        if (!$bookingData) {
+
+        if (! $bookingData) {
             return redirect()->route('movies.index')->with('error', 'Booking session expired.');
         }
-        
+
         $showtime = Showtime::findOrFail($bookingData['showtime_id']);
         $bookedSeats = $showtime->getBookedSeats();
-        
+
         foreach ($bookingData['seat_ids'] as $seatId) {
             if (in_array($seatId, $bookedSeats)) {
                 return redirect()->route('movies.index')->with('error', 'Some seats were just booked. Please try again.');
             }
         }
-        
+
         $snackData = session('snack_data');
         $finalAmount = $bookingData['total_amount'] + ($snackData['total_amount'] ?? 0);
 
         DB::beginTransaction();
-        
+
         try {
             $booking = Booking::create([
                 'user_id' => Auth::id(),
@@ -231,63 +232,66 @@ class BookingController extends Controller
                 'total_seats' => $bookingData['total_seats'],
                 'total_amount' => $finalAmount,
                 'status' => 'paid',
-                'payment_status' => 'paid'
+                'payment_status' => 'paid',
             ]);
-            
+
             foreach ($bookingData['seat_ids'] as $seatId) {
                 BookingSeat::create([
                     'booking_id' => $booking->id,
                     'seat_id' => $seatId,
-                    'price' => $showtime->price
+                    'price' => $showtime->price,
                 ]);
             }
-            
+
             DB::commit();
-            
+
             if ($snackData) {
                 session(['completed_snack_items' => $snackData['items']]);
             }
             session()->forget('booking_data');
             session()->forget('snack_data');
-            
+
             return redirect()->route('bookings.success', $booking->id);
-            
+
         } catch (\Exception $e) {
             DB::rollBack();
+
             return redirect()->back()->with('error', 'An error occurred. Please try again.');
         }
     }
-    
+
     public function bookingSuccess($id)
     {
         $booking = Booking::with(['showtime.movie', 'showtime.hall', 'seats'])
-                         ->where('user_id', Auth::id())
-                         ->findOrFail($id);
+            ->where('user_id', Auth::id())
+            ->findOrFail($id);
         $completedSnackItems = session('completed_snack_items');
         session()->forget('completed_snack_items');
-        
+
         return view('bookings.success', compact('booking', 'completedSnackItems'));
     }
-    
+
     public function myBookings()
     {
         $bookings = Booking::with(['showtime.movie', 'showtime.hall'])
-                          ->where('user_id', Auth::id())
-                          ->orderBy('created_at', 'desc')
-                          ->paginate(10);
-        
+            ->where('user_id', Auth::id())
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
+
         $pageTitle = 'My Bookings';
+
         return view('bookings.my-bookings', compact('bookings', 'pageTitle'));
     }
-    
+
     public function ticketHistory()
     {
         $bookings = Booking::with(['showtime.movie', 'showtime.hall'])
-                          ->where('user_id', Auth::id())
-                          ->orderBy('created_at', 'desc')
-                          ->paginate(10);
+            ->where('user_id', Auth::id())
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
 
         $pageTitle = 'Ticket History';
+
         return view('bookings.my-bookings', compact('bookings', 'pageTitle'));
     }
 
@@ -303,33 +307,34 @@ class BookingController extends Controller
             ->get();
 
         $pageTitle = 'Exchange Tickets';
+
         return view('bookings.exchange-dashboard', compact('bookings', 'pageTitle'));
     }
-    
+
     public function showBooking($id)
     {
         $booking = Booking::with(['showtime.movie', 'showtime.hall', 'seats', 'exchangeRequests'])
-                         ->where('user_id', Auth::id())
-                         ->findOrFail($id);
-        
+            ->where('user_id', Auth::id())
+            ->findOrFail($id);
+
         return view('bookings.show', compact('booking'));
     }
-    
+
     public function cancelBooking($id)
     {
         $booking = Booking::where('user_id', Auth::id())->findOrFail($id);
-        
+
         if ($booking->showtime->start_time < now()) {
             return redirect()->back()->with('error', 'Cannot cancel past showtimes.');
         }
-        
+
         $booking->status = 'cancelled';
         $booking->payment_status = 'refunded';
         $booking->save();
-        
+
         return redirect()->back()->with('success', 'Booking cancelled successfully.');
     }
-    
+
     public function requestExchange(Request $request, $id)
     {
         $booking = Booking::with('showtime.movie', 'seats')->where('user_id', Auth::id())->findOrFail($id);
@@ -338,7 +343,7 @@ class BookingController extends Controller
             'new_showtime_id' => 'required|exists:showtimes,id',
             'seats' => 'required|array',
             'seats.*' => 'exists:seats,id',
-            'reason' => 'required|min:10'
+            'reason' => 'required|min:10',
         ]);
 
         if ($booking->status != 'paid') {
@@ -395,7 +400,7 @@ class BookingController extends Controller
             'new_showtime_id' => $request->new_showtime_id,
             'selected_seat_ids' => $request->seats,
             'reason' => $request->reason,
-            'status' => 'pending'
+            'status' => 'pending',
         ]);
 
         return redirect()->back()->with('success', 'Exchange request submitted successfully.');

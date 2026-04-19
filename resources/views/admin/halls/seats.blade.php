@@ -93,11 +93,15 @@
                         <div class="mb-3">
                             <label class="form-label">Select rows to update:</label>
                             @for($row = 1; $row <= $hall->rows; $row++)
+                            @php
+                                $firstSeatInRow = $seats->where('row', $row)->first();
+                                $currentType = $firstSeatInRow ? $firstSeatInRow->type : 'regular';
+                            @endphp
                             <div class="mb-2">
                                 <label>Row {{ chr(64 + $row) }}</label>
                                 <select name="seat_types[{{ $row }}]" class="form-select">
-                                    <option value="regular">Regular</option>
-                                    <option value="vip">VIP</option>
+                                    <option value="regular" {{ $currentType == 'regular' ? 'selected' : '' }}>Regular</option>
+                                    <option value="vip" {{ $currentType == 'vip' ? 'selected' : '' }}>VIP</option>
                                 </select>
                             </div>
                             @endfor

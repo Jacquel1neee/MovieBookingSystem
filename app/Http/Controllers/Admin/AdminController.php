@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Models\Movie;
 use App\Models\Booking;
-use App\Models\User;
 use App\Models\ExchangeRequest;
+use App\Models\Movie;
+use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 
 class AdminController extends Controller
 {
@@ -16,46 +16,47 @@ class AdminController extends Controller
     {
         $this->middleware('auth');
         $this->middleware(function ($request, $next) {
-            if (!auth()->check()) {
+            if (! auth()->check()) {
                 return redirect()->route('login');
             }
-            
-            if (!auth()->user()->is_admin) {
+
+            if (! auth()->user()->is_admin) {
                 abort(403, 'Unauthorized access. Admin only.');
             }
+
             return $next($request);
         });
     }
-    
+
     public function dashboard()
     {
         $totalMovies = Movie::count();
         $totalBookings = Booking::count();
         $totalUsers = User::count();
         $pendingExchanges = ExchangeRequest::where('status', 'pending')->count();
-        
+
         $recentBookings = Booking::with(['user', 'showtime.movie'])
-                                ->orderBy('created_at', 'desc')
-                                ->take(10)
-                                ->get();
-        
+            ->orderBy('created_at', 'desc')
+            ->take(10)
+            ->get();
+
         $recentExchanges = ExchangeRequest::with(['user', 'booking'])
-                                         ->orderBy('created_at', 'desc')
-                                         ->take(10)
-                                         ->get();
-        
+            ->orderBy('created_at', 'desc')
+            ->take(10)
+            ->get();
+
         $revenueToday = Booking::whereDate('created_at', Carbon::today())
-                              ->where('payment_status', 'paid')
-                              ->sum('total_amount');
-                              
+            ->where('payment_status', 'paid')
+            ->sum('total_amount');
+
         $revenueThisWeek = Booking::whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])
-                              ->where('payment_status', 'paid')
-                              ->sum('total_amount');
-                              
+            ->where('payment_status', 'paid')
+            ->sum('total_amount');
+
         $revenueThisMonth = Booking::whereMonth('created_at', Carbon::now()->month)
-                               ->whereYear('created_at', Carbon::now()->year)
-                               ->where('payment_status', 'paid')
-                               ->sum('total_amount');
+            ->whereYear('created_at', Carbon::now()->year)
+            ->where('payment_status', 'paid')
+            ->sum('total_amount');
 
         // Fetch daily revenue for the current week to show in the graph
         $weeklyRevenue = [];
@@ -65,10 +66,10 @@ class AdminController extends Controller
             $amount = Booking::whereDate('created_at', $date)
                 ->where('payment_status', 'paid')
                 ->sum('total_amount');
-            
+
             $weeklyRevenue[] = [
                 'day' => $date->format('D'),
-                'amount' => $amount
+                'amount' => $amount,
             ];
             $maxRevenue = max($maxRevenue, $amount);
         }
@@ -78,7 +79,7 @@ class AdminController extends Controller
             ->whereDate('start_time', Carbon::today())
             ->orderBy('start_time', 'asc')
             ->get();
-        
+
         return view('admin.dashboard', compact(
             'totalMovies', 'totalBookings', 'totalUsers', 'pendingExchanges',
             'recentBookings', 'recentExchanges', 'revenueToday', 'revenueThisWeek', 'revenueThisMonth', 'weeklyRevenue', 'maxRevenue', 'todayShowtimes'
@@ -94,7 +95,7 @@ class AdminController extends Controller
             ->when($searchUser, function ($query, $search) {
                 return $query->where(function ($q) use ($search) {
                     $q->where('name', 'like', "%{$search}%")
-                      ->orWhere('email', 'like', "%{$search}%");
+                        ->orWhere('email', 'like', "%{$search}%");
                 });
             })
             ->paginate(10, ['*'], 'users_page')
@@ -104,7 +105,7 @@ class AdminController extends Controller
             ->when($searchAdmin, function ($query, $search) {
                 return $query->where(function ($q) use ($search) {
                     $q->where('name', 'like', "%{$search}%")
-                      ->orWhere('email', 'like', "%{$search}%");
+                        ->orWhere('email', 'like', "%{$search}%");
                 });
             })
             ->paginate(10, ['*'], 'admins_page')
@@ -119,10 +120,11 @@ class AdminController extends Controller
             return redirect()->back()->with('error', 'You cannot remove your own admin status.');
         }
 
-        $user->is_admin = !$user->is_admin;
+        $user->is_admin = ! $user->is_admin;
         $user->save();
 
         $statusMessage = $user->is_admin ? 'User is now an admin!' : 'Admin rights revoked for user.';
+
         return redirect()->back()->with('success', $statusMessage);
     }
 }

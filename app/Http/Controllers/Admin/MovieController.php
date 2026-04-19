@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\Movie;
+use Illuminate\Http\Request;
 
 class MovieController extends Controller
 {
@@ -12,24 +12,26 @@ class MovieController extends Controller
     {
         $this->middleware('auth');
         $this->middleware(function ($request, $next) {
-            if (!auth()->user()->is_admin) {
+            if (! auth()->user()->is_admin) {
                 abort(403, 'Unauthorized access.');
             }
+
             return $next($request);
         });
     }
-    
+
     public function index()
     {
         $movies = Movie::orderBy('created_at', 'desc')->paginate(10);
+
         return view('admin.movies.index', compact('movies'));
     }
-    
+
     public function create()
     {
         return view('admin.movies.create');
     }
-    
+
     public function store(Request $request)
     {
         $request->validate([
@@ -39,7 +41,7 @@ class MovieController extends Controller
             'release_date' => 'required|date',
             'poster' => 'nullable|url',
             'poster_image' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:5120',
-            'is_showing' => 'boolean'
+            'is_showing' => 'boolean',
         ]);
 
         $data = $request->only(['title', 'description', 'duration', 'release_date', 'is_showing']);
@@ -49,18 +51,18 @@ class MovieController extends Controller
         } elseif ($request->filled('poster')) {
             $data['poster'] = $request->poster;
         }
-        
+
         Movie::create($data);
-        
+
         return redirect()->route('admin.movies.index')
-                        ->with('success', 'Movie created successfully.');
+            ->with('success', 'Movie created successfully.');
     }
-    
+
     public function edit(Movie $movie)
     {
         return view('admin.movies.edit', compact('movie'));
     }
-    
+
     public function update(Request $request, Movie $movie)
     {
         $request->validate([
@@ -70,7 +72,7 @@ class MovieController extends Controller
             'release_date' => 'required|date',
             'poster' => 'nullable|url',
             'poster_image' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:5120',
-            'is_showing' => 'boolean'
+            'is_showing' => 'boolean',
         ]);
 
         $data = $request->only(['title', 'description', 'duration', 'release_date', 'is_showing']);
@@ -80,18 +82,18 @@ class MovieController extends Controller
         } elseif ($request->filled('poster')) {
             $data['poster'] = $request->poster;
         }
-        
+
         $movie->update($data);
-        
+
         return redirect()->route('admin.movies.index')
-                        ->with('success', 'Movie updated successfully.');
+            ->with('success', 'Movie updated successfully.');
     }
-    
+
     public function destroy(Movie $movie)
     {
         $movie->delete();
-        
+
         return redirect()->route('admin.movies.index')
-                        ->with('success', 'Movie deleted successfully.');
+            ->with('success', 'Movie deleted successfully.');
     }
 }

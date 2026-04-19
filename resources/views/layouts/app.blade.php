@@ -89,7 +89,34 @@
 
         @if(!request()->routeIs('home') && !request()->routeIs('login') && !request()->routeIs('register') && !request()->routeIs('admin.dashboard'))
             <div class="container py-2">
-                <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm me-2">
+                @php
+                    $routeName = request()->route()?->getName() ?? '';
+                    $backUrl = route('home'); // Default fallback
+
+                    if (str_starts_with($routeName, 'admin.')) {
+                        if (str_ends_with($routeName, '.index') || in_array($routeName, ['admin.manage-admins', 'admin.reports'])) {
+                            $backUrl = route('admin.dashboard');
+                        } else {
+                            $prefix = Str::beforeLast($routeName, '.');
+                            if (Route::has($prefix . '.index')) {
+                                $backUrl = route($prefix . '.index');
+                            } else {
+                                $backUrl = route('admin.dashboard');
+                            }
+                        }
+                    } else {
+                        if (str_starts_with($routeName, 'bookings.')) {
+                            if (in_array($routeName, ['bookings.history', 'bookings.my-bookings'])) {
+                                $backUrl = route('home');
+                            } else {
+                                $backUrl = route('bookings.history');
+                            }
+                        } elseif (in_array($routeName, ['promotions', 'snacks', 'support.feedback', 'support.faq'])) {
+                            $backUrl = route('home');
+                        }
+                    }
+                @endphp
+                <a href="{{ $backUrl }}" class="btn btn-outline-secondary btn-sm me-2">
                     <i class="bi bi-arrow-left"></i> Back
                 </a>
             </div>

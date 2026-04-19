@@ -12,7 +12,7 @@ class BookingSeat extends Model
     protected $fillable = [
         'booking_id',
         'seat_id',
-        'price'
+        'price',
     ];
 
     public function booking()

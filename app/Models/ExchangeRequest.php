@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Attributes\Boot;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -19,7 +18,7 @@ class ExchangeRequest extends Model
         'reason',
         'selected_seat_ids',
         'admin_remarks',
-        'status'
+        'status',
     ];
 
     protected $casts = [
@@ -31,7 +30,7 @@ class ExchangeRequest extends Model
         parent::boot();
 
         static::creating(function ($request) {
-            $request->request_number = 'ER' . strtoupper(uniqid());
+            $request->request_number = 'ER'.strtoupper(uniqid());
         });
     }
 

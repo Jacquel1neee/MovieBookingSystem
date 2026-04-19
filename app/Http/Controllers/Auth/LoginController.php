@@ -30,7 +30,6 @@ class LoginController extends Controller
     /**
      * The user has been authenticated.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @param  mixed  $user
      * @return mixed
      */
@@ -39,14 +38,13 @@ class LoginController extends Controller
         if ($user->is_admin) {
             return redirect()->route('admin.dashboard');
         }
-        
+
         return redirect()->route('home');
     }
 
     /**
      * Log the user out of the application.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\JsonResponse
      */
     public function logout(Request $request)

@@ -19,7 +19,7 @@ class Movie extends Model
         'duration',
         'poster',
         'release_date',
-        'is_showing'
+        'is_showing',
     ];
 
     protected $casts = [
@@ -29,7 +29,7 @@ class Movie extends Model
 
     public function getPosterUrlAttribute()
     {
-        if (!$this->poster) {
+        if (! $this->poster) {
             return null;
         }
 
@@ -37,7 +37,7 @@ class Movie extends Model
             return $this->poster;
         }
 
-        return asset('storage/' . ltrim($this->poster, '/'));
+        return asset('storage/'.ltrim($this->poster, '/'));
     }
 
     public function showtimes()

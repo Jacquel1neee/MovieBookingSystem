@@ -51,13 +51,13 @@
                         @foreach($bookings as $booking)
                         <tr>
                             <td>{{ $booking->booking_number }}</td>
-                            <td>{{ $booking->user->name }}</td>
-                            <td>{{ $booking->showtime->movie->title }}</td>
-                            <td>{{ $booking->showtime->start_time->format('M d, h:i A') }}</td>
+                            <td>{{ $booking->user?->name ?? 'Unknown User' }}</td>
+                            <td>{{ $booking->showtime?->movie?->title ?? 'Unknown Movie' }}</td>
+                            <td>{{ $booking->showtime?->start_time?->format('M d, h:i A') ?? 'N/A' }}</td>
                             <td>{{ $booking->total_seats }}</td>
                             <td>${{ number_format($booking->seats->sum('pivot.price'), 2) }}</td>
                             <td>
-                                <span class="badge bg-{{ $booking->status == 'paid' ? 'success' : ($booking->status == 'cancelled' ? 'danger' : 'warning') }}">
+                                <span class="badge bg-{{ $booking->status == 'paid' ? 'success' : ($booking->status == 'cancelled' ? 'danger' : ($booking->status == 'completed' ? 'secondary' : 'warning')) }}">
                                     {{ $booking->status }}
                                 </span>
                             </td>
@@ -68,7 +68,7 @@
                             </td>
                             <td>
                                 <a href="{{ route('admin.bookings.show', $booking) }}" class="btn btn-sm btn-info">
-                                    <i class="bi bi-eye"></i>
+                                    <i class="bi bi-eye"></i> View
                                 </a>
                             </td>
                         </tr>

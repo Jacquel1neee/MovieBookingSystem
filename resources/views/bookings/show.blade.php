@@ -37,7 +37,7 @@
                             <p>
                                 <strong>Booking Number:</strong> {{ $booking->booking_number }}<br>
                                 <strong>Status:</strong> 
-                                <span class="badge bg-{{ $booking->status == 'paid' ? 'success' : ($booking->status == 'cancelled' ? 'danger' : 'warning') }}">
+                                <span class="badge bg-{{ $booking->status == 'paid' ? 'success' : ($booking->status == 'cancelled' ? 'danger' : ($booking->status == 'completed' ? 'secondary' : 'warning')) }}">
                                     {{ ucfirst($booking->status) }}
                                 </span><br>
                                 <strong>Payment Status:</strong> 

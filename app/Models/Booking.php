@@ -17,7 +17,7 @@ class Booking extends Model
         'total_seats',
         'total_amount',
         'status',
-        'payment_status'
+        'payment_status',
     ];
 
     protected static function boot()
@@ -25,7 +25,7 @@ class Booking extends Model
         parent::boot();
 
         static::creating(function ($booking) {
-            $booking->booking_number = 'BK' . strtoupper(uniqid());
+            $booking->booking_number = 'BK'.strtoupper(uniqid());
         });
     }
 

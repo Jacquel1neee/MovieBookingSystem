@@ -10,7 +10,7 @@ class Hall extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name', 'rows', 'columns', 'total_seats', 'experience_type'
+        'name', 'rows', 'columns', 'total_seats', 'experience_type',
     ];
 
     public function showtimes()

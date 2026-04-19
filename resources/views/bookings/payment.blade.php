@@ -74,7 +74,7 @@
                     <form action="{{ route('bookings.store') }}" method="POST">
                         @csrf
                         <div class="d-flex justify-content-between gap-2 flex-wrap">
-                            <button type="button" class="btn btn-outline-secondary" onclick="window.history.back();">Back to Review</button>
+                            <a href="{{ url()->previous(route('home')) }}" class="btn btn-outline-secondary">Back to Review</a>
                             <button type="submit" class="btn btn-success px-5">Pay Now</button>
                         </div>
                     </form>

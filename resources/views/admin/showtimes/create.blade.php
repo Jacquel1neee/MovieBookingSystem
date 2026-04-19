@@ -64,6 +64,15 @@
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
+
+                <div class="mb-3">
+                    <label for="vip_price" class="form-label">VIP Price ($)</label>
+                    <input type="number" step="0.01" class="form-control @error('vip_price') is-invalid @enderror" 
+                           id="vip_price" name="vip_price" value="{{ old('vip_price') }}" required>
+                    @error('vip_price')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
                 
                 <div class="d-flex justify-content-between">
                     <a href="{{ route('admin.showtimes.index') }}" class="btn btn-secondary">Cancel</a>

@@ -10,7 +10,7 @@ class Showtime extends Model
     use HasFactory;
 
     protected $fillable = [
-        'movie_id', 'hall_id', 'start_time', 'end_time', 'price'
+        'movie_id', 'hall_id', 'start_time', 'end_time', 'price', 'vip_price',
     ];
 
     protected $casts = [
@@ -44,6 +44,7 @@ class Showtime extends Model
                 }
             }
         }
+
         return $bookedSeats;
     }
 }

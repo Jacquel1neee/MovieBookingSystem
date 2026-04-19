@@ -88,6 +88,7 @@
                 
                 <div class="mb-3">
                     <div class="form-check">
+                        <input type="hidden" name="is_showing" value="0">
                         <input type="checkbox" class="form-check-input" id="is_showing" name="is_showing" value="1" {{ old('is_showing', $movie->is_showing) ? 'checked' : '' }}>
                         <label class="form-check-label" for="is_showing">Currently Showing</label>
                     </div>
