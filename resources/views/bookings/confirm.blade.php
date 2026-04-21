@@ -60,13 +60,22 @@
                         <i class="bi bi-info-circle"></i> This is a demo flow. Proceed to the mock payment page to complete your booking.
                     </div>
                     
+                    <div class="alert alert-warning">
+                        <strong>Would you like to add snacks to your booking?</strong>
+                        <p class="mb-0 mt-2 small">Add snacks before payment for a complete cinema experience.</p>
+                    </div>
+                    
                     <form action="{{ route('bookings.payment') }}" method="GET">
-                        <div class="d-flex justify-content-between">
+                        <div class="d-flex justify-content-between gap-2 flex-wrap">
                             <a href="{{ route('bookings.select-seats', $showtime->id) }}" class="btn btn-secondary">Back to Seat Selection</a>
                             <div>
-                                <a href="{{ route('snacks', ['source' => 'booking']) }}" class="btn btn-warning me-2">Add Snacks</a>
-                                <button type="submit" class="btn btn-primary">Proceed to Payment</button>
-                            </div
+                                <a href="{{ route('snacks', ['source' => 'booking']) }}" class="btn btn-warning me-2">
+                                    <i class="bi bi-cup-straw"></i> Add Snacks
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    Skip, Go to Payment
+                                </button>
+                            </div>
                                 <a href="{{ route('snacks', ['source' => 'booking']) }}" class="btn btn-warning me-2">Add Snacks</a>
                                 <button type="submit" class="btn btn-primary">Proceed to Payment</button>
                             </div>

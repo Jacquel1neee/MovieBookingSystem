@@ -276,7 +276,7 @@
                                     @if($seat->column <= $midPoint)
                                         @php
                                             $isBooked = in_array($seat->id, $bookedSeats);
-                                            $seatType = ($seat->row == $showtime->hall->rows || chr(64 + $seat->row) == 'J') ? 'vip' : $seat->type;
+                                            $seatType = $seat->type;
                                         @endphp
                                         
                                         <td>
@@ -309,7 +309,7 @@
                                     @if($seat->column > $midPoint)
                                         @php
                                             $isBooked = in_array($seat->id, $bookedSeats);
-                                            $seatType = ($seat->row == $showtime->hall->rows || chr(64 + $seat->row) == 'J') ? 'vip' : $seat->type;
+                                            $seatType = $seat->type;
                                         @endphp
                                         
                                         <td>

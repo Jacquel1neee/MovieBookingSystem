@@ -128,6 +128,11 @@
                             <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
                                 <h5 class="fw-bold mb-0">{{ $booking->showtime->movie->title }}</h5>
                                 <span class="badge bg-light text-dark">#{{ $booking->booking_number }}</span>
+                                @if($booking->snackOrders->count() > 0)
+                                    <span class="badge bg-info text-white">
+                                        <i class="bi bi-cup-straw"></i> {{ $booking->snackOrders->count() }} snack order(s)
+                                    </span>
+                                @endif
                             </div>
                             
                             <!-- Details Grid -->

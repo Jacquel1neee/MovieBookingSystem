@@ -59,6 +59,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/bookings/{id}', [BookingController::class, 'showBooking'])->name('bookings.show');
     Route::post('/bookings/{id}/cancel', [BookingController::class, 'cancelBooking'])->name('bookings.cancel');
     Route::post('/bookings/{id}/exchange', [BookingController::class, 'requestExchange'])->name('bookings.request-exchange');
+    Route::post('/bookings/apply-promo', [BookingController::class, 'applyPromoCode'])->name('bookings.apply-promo');
 });
 
 Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {

@@ -7,6 +7,7 @@ use App\Models\BookingSeat;
 use App\Models\ExchangeRequest;
 use App\Models\Seat;
 use App\Models\Showtime;
+use App\Models\SnackOrder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -164,6 +165,16 @@ class BookingController extends Controller
         $items = $snackData['items'];
         $totalAmount = $snackData['total_amount'];
 
+        // Create a snack order record in the database
+        SnackOrder::create([
+            'user_id' => Auth::id(),
+            'booking_id' => null,
+            'items' => $items,
+            'total_amount' => $totalAmount,
+            'order_number' => 'SO'.strtoupper(uniqid()),
+            'status' => 'completed',
+        ]);
+
         session()->forget('snack_data');
 
         return view('bookings.snacks-success', compact('items', 'totalAmount'));
@@ -222,6 +233,10 @@ class BookingController extends Controller
 
         $snackData = session('snack_data');
         $finalAmount = $bookingData['total_amount'] + ($snackData['total_amount'] ?? 0);
+        
+        // Apply discount if available
+        $discountAmount = session('discount_amount', 0);
+        $finalAmount = max(0, $finalAmount - $discountAmount);
 
         DB::beginTransaction();
 
@@ -243,6 +258,18 @@ class BookingController extends Controller
                 ]);
             }
 
+            // Store snack order if snacks were purchased
+            if ($snackData) {
+                SnackOrder::create([
+                    'user_id' => Auth::id(),
+                    'booking_id' => $booking->id,
+                    'items' => $snackData['items'],
+                    'total_amount' => $snackData['total_amount'],
+                    'order_number' => 'SO'.strtoupper(uniqid()),
+                    'status' => 'completed',
+                ]);
+            }
+
             DB::commit();
 
             if ($snackData) {
@@ -250,6 +277,8 @@ class BookingController extends Controller
             }
             session()->forget('booking_data');
             session()->forget('snack_data');
+            session()->forget('promotion_code');
+            session()->forget('discount_amount');
 
             return redirect()->route('bookings.success', $booking->id);
 
@@ -285,10 +314,16 @@ class BookingController extends Controller
 
     public function ticketHistory()
     {
-        $bookings = Booking::with(['showtime.movie', 'showtime.hall'])
+        $query = Booking::with(['showtime.movie', 'showtime.hall', 'snackOrders'])
             ->where('user_id', Auth::id())
-            ->orderBy('created_at', 'desc')
-            ->paginate(10);
+            ->orderBy('created_at', 'desc');
+
+        // Apply status filter if provided
+        if (request('status')) {
+            $query->where('status', request('status'));
+        }
+
+        $bookings = $query->paginate(10);
 
         $pageTitle = 'Ticket History';
 
@@ -313,7 +348,7 @@ class BookingController extends Controller
 
     public function showBooking($id)
     {
-        $booking = Booking::with(['showtime.movie', 'showtime.hall', 'seats', 'exchangeRequests'])
+        $booking = Booking::with(['showtime.movie', 'showtime.hall', 'seats', 'exchangeRequests', 'snackOrders'])
             ->where('user_id', Auth::id())
             ->findOrFail($id);
 
@@ -404,5 +439,39 @@ class BookingController extends Controller
         ]);
 
         return redirect()->back()->with('success', 'Exchange request submitted successfully.');
+    }
+
+    public function applyPromoCode(Request $request)
+    {
+        $request->validate([
+            'code' => 'required|string|max:20',
+        ]);
+
+        $code = strtoupper(trim($request->code));
+        
+        // Define available promotional codes
+        $promoCodes = [
+            'GSCFIRST5' => ['discount' => 5.00, 'description' => 'RM5 off first booking'],
+            'WEEKEND10' => ['discount' => 10.00, 'description' => 'RM10 off weekend bookings'],
+            'STUDENT20' => ['discount' => 20.00, 'description' => 'RM20 off student discount'],
+        ];
+
+        if (!isset($promoCodes[$code])) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid promotion code',
+            ], 400);
+        }
+
+        $discountInfo = $promoCodes[$code];
+        
+        session(['promotion_code' => $code]);
+        session(['discount_amount' => $discountInfo['discount']]);
+
+        return response()->json([
+            'success' => true,
+            'message' => $discountInfo['description'] . ' applied successfully',
+            'discount' => $discountInfo['discount'],
+        ]);
     }
 }

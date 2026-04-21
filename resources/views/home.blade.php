@@ -27,7 +27,7 @@
             </a>
         </div>
         <div class="col-6 col-md-3 col-lg-2">
-            <a href="{{ route('home') }}#coming-soon" class="btn btn-outline-secondary w-100 py-3">
+            <a href="{{ route('movies.index', ['coming-soon' => 1]) }}" class="btn btn-outline-secondary w-100 py-3">
                 <i class="bi bi-calendar-event-fill d-block fs-4 mb-2"></i>
                 <span class="d-none d-sm-inline">Coming Soon</span>
             </a>

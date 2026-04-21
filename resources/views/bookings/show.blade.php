@@ -78,6 +78,29 @@
                         </tfoot>
                     </table>
                     
+                    @if($booking->snackOrders->count() > 0)
+                    <h5 class="mt-4">Snack Orders</h5>
+                    <div class="alert alert-info">
+                        <div class="row">
+                            @foreach($booking->snackOrders as $snackOrder)
+                                <div class="col-12">
+                                    <strong>Order #{{ $snackOrder->order_number }}</strong> - 
+                                    <span class="badge bg-success">{{ $snackOrder->status }}</span><br>
+                                    <small class="text-muted">{{ $snackOrder->created_at->format('F j, Y h:i A') }}</small>
+                                    <div class="mt-2">
+                                        @foreach($snackOrder->items as $item)
+                                            <div>{{ $item['quantity'] }} × {{ $item['name'] }} - RM {{ number_format($item['subtotal'], 2) }}</div>
+                                        @endforeach
+                                    </div>
+                                    <div class="mt-2 fw-bold">
+                                        Total: RM {{ number_format($snackOrder->total_amount, 2) }}
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                    @endif
+                    
                     @if($booking->status == 'paid' && $booking->showtime->start_time > now())
                     <div class="mt-4 d-flex flex-wrap gap-2">
                         <a href="{{ route('bookings.exchange', $booking->id) }}" class="btn btn-warning">
