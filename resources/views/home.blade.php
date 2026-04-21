@@ -314,7 +314,7 @@
                 <ul class="list-unstyled small">
                     <li class="mb-2"><a href="{{ route('home') }}#now-showing" class="text-white-50 text-decoration-none">Now Showing</a></li>
                     <li class="mb-2"><a href="{{ route('home') }}#coming-soon" class="text-white-50 text-decoration-none">Coming Soon</a></li>
-                    <li class="mb-2"><a href="{{ route('promotions') }}" class="text-white-50 text-decoration-none">Promotions</a></li>
+                    <!-- <li class="mb-2"><a href="{{ route('promotions') }}" class="text-white-50 text-decoration-none">Promotions</a></li> -->
                 </ul>
             </div>
             <div class="col-6 col-md-3">
@@ -325,7 +325,7 @@
                     <li class="mb-2"><a href="{{ route('support.feedback') }}" class="text-white-50 text-decoration-none">Feedback</a></li>
                 </ul>
             </div>
-            <div class="col-6 col-md-3">
+            <!-- <div class="col-6 col-md-3">
                 <h6 class="text-white mb-3">Follow Us</h6>
                 <div class="d-flex gap-3">
                     <a href="#" class="text-white-50 fs-5"><i class="bi bi-facebook"></i></a>
@@ -333,7 +333,7 @@
                     <a href="#" class="text-white-50 fs-5"><i class="bi bi-twitter-x"></i></a>
                     <a href="#" class="text-white-50 fs-5"><i class="bi bi-youtube"></i></a>
                 </div>
-            </div>
+            </div> -->
         </div>
         <hr class="border-secondary my-4">
         <div class="row">
