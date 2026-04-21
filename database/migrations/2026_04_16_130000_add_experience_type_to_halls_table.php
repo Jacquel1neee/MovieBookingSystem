@@ -11,9 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('halls', function (Blueprint $table) {
-            $table->string('experience_type')->default('Standard')->after('total_seats');
-        });
+        if (!Schema::hasColumn('halls', 'experience_type')) {
+            Schema::table('halls', function (Blueprint $table) {
+                $table->string('experience_type')->default('Standard')->after('total_seats');
+            });
+        }
     }
 
     /**
@@ -21,8 +23,10 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('halls', function (Blueprint $table) {
-            $table->dropColumn('experience_type');
-        });
+        if (Schema::hasColumn('halls', 'experience_type')) {
+            Schema::table('halls', function (Blueprint $table) {
+                $table->dropColumn('experience_type');
+            });
+        }
     }
 };

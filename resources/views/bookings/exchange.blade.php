@@ -108,23 +108,7 @@
 
 @push('scripts')
 <script>
-    const exchangeShows = @json($showtimes->map(function ($showtime) {
-        return [
-            'id' => $showtime->id,
-            'label' => $showtime->start_time->format('M d, Y h:i A') + ' - ' + $showtime->hall->name,
-            'available' => $showtime->hall->seats->whereNotIn('id', $showtime->getBookedSeats())->count(),
-            'seats' => $showtime->hall->seats->map(function ($seat) use ($showtime) {
-                return [
-                    'id' => $seat->id,
-                    'seat_number' => $seat->seat_number,
-                    'type' => $seat->type ?: 'regular',
-                    'row' => $seat->row,
-                    'column' => $seat->column,
-                    'booked' => in_array($seat->id, $showtime->getBookedSeats()),
-                ];
-            })->sortBy('row')->sortBy('column')->values()->all(),
-        ];
-    })->values());
+    const exchangeShows = @json($exchangeShows);
 
     const requiredSeatCount = {{ $booking->total_seats }};
     const requiredTypeCounts = @json($booking->seats->groupBy(fn($seat) => $seat->type ?: 'regular')->map->count()->toArray());
