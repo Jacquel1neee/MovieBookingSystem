@@ -1,4 +1,4 @@
-@extends('layouts.app')
+<!-- @extends('layouts.app')
 
 @section('title', 'Promotions - GSC Cinemas')
 
@@ -53,4 +53,4 @@
         </div>
     </div>
 </div>
-@endsection
+@endsection -->

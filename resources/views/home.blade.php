@@ -32,12 +32,12 @@
                 <span class="d-none d-sm-inline">Coming Soon</span>
             </a>
         </div>
-        <div class="col-6 col-md-3 col-lg-2">
+        <!-- <div class="col-6 col-md-3 col-lg-2">
             <a href="{{ route('promotions') }}" class="btn btn-outline-secondary w-100 py-3">
                 <i class="bi bi-ticket-perforated-fill d-block fs-4 mb-2"></i>
                 <span class="d-none d-sm-inline">Promotions</span>
             </a>
-        </div>
+        </div> -->
         <div class="col-6 col-md-3 col-lg-2">
             <a href="{{ route('snacks') }}" class="btn btn-outline-secondary w-100 py-3">
                 <i class="bi bi-cup-straw d-block fs-4 mb-2"></i>
@@ -230,7 +230,7 @@
     </div>
 </div>
 
-<!-- Promotions Section -->
+<!-- Promotions Section
 <div class="container mt-5">
     <div class="row mb-4">
         <div class="col-12">
@@ -271,7 +271,7 @@
             </div>
         </div>
     </div>
-</div>
+</div> -->
 
 <!-- Download App Section -->
 <div class="container mt-5">
