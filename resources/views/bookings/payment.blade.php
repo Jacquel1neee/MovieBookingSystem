@@ -24,7 +24,12 @@
                             <p class="mb-1"><strong>Date:</strong> {{ $showtime->start_time->format('l, F j, Y') }}</p>
                             <p class="mb-1"><strong>Time:</strong> {{ $showtime->start_time->format('h:i A') }} - {{ $showtime->end_time->format('h:i A') }}</p>
                             <p class="mb-1"><strong>Hall:</strong> {{ $showtime->hall->name }}</p>
-                            <p class="mb-1"><strong>Seats:</strong> {{ implode(', ', $seats->pluck('seat_number')->toArray()) }}</p>
+                            <p class="mb-1"><strong>Seats:</strong></p>
+                            <ul class="mb-1">
+                                @foreach($seats as $seat)
+                                    <li>{{ $seat->seat_number }} ({{ ucfirst($seat->type) }}) - RM {{ number_format($seat->type === 'vip' ? $showtime->vip_price : $showtime->price, 2) }}</li>
+                                @endforeach
+                            </ul>
                             <p class="mb-0"><strong>Total:</strong> RM {{ number_format($bookingData['total_amount'], 2) }}</p>
                         </div>
                     </div>

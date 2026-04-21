@@ -11,6 +11,8 @@ use App\Models\SnackOrder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Pagination\Paginator;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class BookingController extends Controller
 {
@@ -83,7 +85,11 @@ class BookingController extends Controller
         }
 
         $seats = Seat::whereIn('id', $request->seats)->get();
-        $totalAmount = count($seats) * $showtime->price;
+        $totalAmount = 0;
+        foreach ($seats as $seat) {
+            $price = $seat->type === 'vip' ? $showtime->vip_price : $showtime->price;
+            $totalAmount += $price;
+        }
 
         session([
             'booking_data' => [
@@ -251,10 +257,12 @@ class BookingController extends Controller
             ]);
 
             foreach ($bookingData['seat_ids'] as $seatId) {
+                $seat = Seat::find($seatId);
+                $price = $seat->type === 'vip' ? $showtime->vip_price : $showtime->price;
                 BookingSeat::create([
                     'booking_id' => $booking->id,
                     'seat_id' => $seatId,
-                    'price' => $showtime->price,
+                    'price' => $price,
                 ]);
             }
 
@@ -314,20 +322,71 @@ class BookingController extends Controller
 
     public function ticketHistory()
     {
-        $query = Booking::with(['showtime.movie', 'showtime.hall', 'snackOrders'])
-            ->where('user_id', Auth::id())
-            ->orderBy('created_at', 'desc');
+        $page = request('page', 1);
+        $perPage = 10;
+        $status = request('status');
+        
+        // Fetch bookings
+        $bookingsQuery = Booking::with(['showtime.movie', 'showtime.hall', 'snackOrders'])
+            ->where('user_id', Auth::id());
 
-        // Apply status filter if provided
-        if (request('status')) {
-            $query->where('status', request('status'));
+        // Apply status filter if provided (only to bookings)
+        if ($status && $status !== 'snacks_only') {
+            $bookingsQuery->where('status', $status);
         }
 
-        $bookings = $query->paginate(10);
+        $bookings = $bookingsQuery->orderBy('created_at', 'desc')->get();
+
+        // Fetch snack-only orders (no associated booking)
+        $snackOnlyOrders = SnackOrder::where('user_id', Auth::id())
+            ->whereNull('booking_id')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        // Merge and sort all items by created_at descending
+        $allItems = collect();
+        
+        // Add bookings to collection if not filtering for snacks_only
+        if ($status !== 'snacks_only') {
+            foreach ($bookings as $booking) {
+                $booking->type = 'booking';
+                $allItems->push($booking);
+            }
+        }
+        
+        // Add snack-only orders if not filtering by booking status
+        if (!$status || $status === 'snacks_only') {
+            foreach ($snackOnlyOrders as $snackOrder) {
+                $snackOrder->type = 'snack_only';
+                $allItems->push($snackOrder);
+            }
+        }
+
+        // Sort by created_at descending
+        $allItems = $allItems->sortByDesc('created_at')->values();
+
+        // Manual pagination
+        $total = $allItems->count();
+        $items = $allItems->forPage($page, $perPage)->values();
+
+        // Create a LengthAwarePaginator with items as collection
+        $paginator = new LengthAwarePaginator(
+            $items,
+            $total,
+            $perPage,
+            $page,
+            [
+                'path' => route('bookings.my-bookings'),
+                'query' => request()->query(),
+            ]
+        );
 
         $pageTitle = 'Ticket History';
 
-        return view('bookings.my-bookings', compact('bookings', 'pageTitle'));
+        return view('bookings.my-bookings', [
+            'bookings' => $paginator,
+            'pageTitle' => $pageTitle,
+        ]);
     }
 
     public function exchangeDashboard()

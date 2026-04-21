@@ -89,12 +89,17 @@ class DatabaseSeeder extends Seeder
                 $rowsAlphabet = range('A', 'Z');
                 for ($row = 0; $row < $data['rows']; $row++) {
                     for ($col = 1; $col <= $data['columns']; $col++) {
+                        $type = 'regular';
+                        // Make the last row VIP seats
+                        if ($row == $data['rows'] - 1) {
+                            $type = 'vip';
+                        }
                         Seat::create([
                             'hall_id' => $hall->id,
                             'row' => $row + 1, // Store as an integer (1, 2, 3...)
                             'column' => $col,
                             'seat_number' => $rowsAlphabet[$row].$col, // A1, A2, B1...
-                            'type' => 'regular', // Match the enum ['regular', 'vip'] in migration
+                            'type' => $type, // Match the enum ['regular', 'vip'] in migration
                         ]);
                     }
                 }
@@ -170,7 +175,11 @@ class DatabaseSeeder extends Seeder
                     continue;
                 }
 
-                $totalPrice = $availableSeats->count() * $randomShowtime->price;
+                $totalPrice = 0;
+                foreach ($availableSeats as $seat) {
+                    $price = $seat->type === 'vip' ? $randomShowtime->vip_price : $randomShowtime->price;
+                    $totalPrice += $price;
+                }
                 $status = $statuses[array_rand($statuses)];
                 $paymentStatus = ($status === 'paid' || $status === 'completed') ? 'paid' : $paymentStatuses[array_rand($paymentStatuses)];
 
@@ -185,7 +194,8 @@ class DatabaseSeeder extends Seeder
                 ]);
 
                 foreach ($availableSeats as $seat) {
-                    $booking->seats()->attach($seat->id, ['price' => $randomShowtime->price]);
+                    $price = $seat->type === 'vip' ? $randomShowtime->vip_price : $randomShowtime->price;
+                    $booking->seats()->attach($seat->id, ['price' => $price]);
                 }
 
                 // 6. Create Exchange Request for SOME of the paid bookings capriciously

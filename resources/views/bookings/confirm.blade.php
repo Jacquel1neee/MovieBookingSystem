@@ -23,7 +23,8 @@
                                 <strong>Date:</strong> {{ $showtime->start_time->format('l, F j, Y') }}<br>
                                 <strong>Time:</strong> {{ $showtime->start_time->format('h:i A') }} - {{ $showtime->end_time->format('h:i A') }}<br>
                                 <strong>Hall:</strong> {{ $showtime->hall->name }}<br>
-                                <strong>Price per seat:</strong> ${{ number_format($showtime->price, 2) }}
+                                <strong>Regular Price:</strong> ${{ number_format($showtime->price, 2) }}<br>
+                                <strong>VIP Price:</strong> ${{ number_format($showtime->vip_price, 2) }}
                             </p>
                         </div>
                     </div>
@@ -39,11 +40,13 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                @php $total = 0; @endphp
                                 @foreach($seats as $seat)
+                                @php $price = $seat->type === 'vip' ? $showtime->vip_price : $showtime->price; $total += $price; @endphp
                                 <tr>
                                     <td>{{ $seat->seat_number }}</td>
                                     <td>{{ ucfirst($seat->type) }}</td>
-                                    <td>${{ number_format($showtime->price, 2) }}</td>
+                                    <td>${{ number_format($price, 2) }}</td>
                                 </tr>
                                 @endforeach
                             </tbody>
@@ -68,14 +71,6 @@
                     <form action="{{ route('bookings.payment') }}" method="GET">
                         <div class="d-flex justify-content-between gap-2 flex-wrap">
                             <a href="{{ route('bookings.select-seats', $showtime->id) }}" class="btn btn-secondary">Back to Seat Selection</a>
-                            <div>
-                                <a href="{{ route('snacks', ['source' => 'booking']) }}" class="btn btn-warning me-2">
-                                    <i class="bi bi-cup-straw"></i> Add Snacks
-                                </a>
-                                <button type="submit" class="btn btn-primary">
-                                    Skip, Go to Payment
-                                </button>
-                            </div>
                                 <a href="{{ route('snacks', ['source' => 'booking']) }}" class="btn btn-warning me-2">Add Snacks</a>
                                 <button type="submit" class="btn btn-primary">Proceed to Payment</button>
                             </div>
