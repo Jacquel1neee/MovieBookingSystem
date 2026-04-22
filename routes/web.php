@@ -61,7 +61,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/bookings/{id}/exchange', [BookingController::class, 'requestExchange'])->name('bookings.request-exchange');
 });
 
-Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
+Route::prefix('admin')->name('admin.')->middleware(['auth', \App\Http\Middleware\EnsureUserIsAdmin::class])->group(function () {
     // Admin Dashboard - 这个路由必须存在
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
     Route::get('/manage-admins', [AdminController::class, 'manageAdmins'])->name('manage-admins');

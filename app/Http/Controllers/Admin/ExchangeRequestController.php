@@ -14,14 +14,7 @@ class ExchangeRequestController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth');
-        $this->middleware(function ($request, $next) {
-            if (! auth()->user()->is_admin) {
-                abort(403, 'Unauthorized access.');
-            }
-
-            return $next($request);
-        });
+        // Authorization is handled by EnsureUserIsAdmin middleware in routes/web.php
     }
 
     public function index()
