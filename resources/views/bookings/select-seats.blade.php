@@ -276,7 +276,7 @@
                                     @if($seat->column <= $midPoint)
                                         @php
                                             $isBooked = in_array($seat->id, $bookedSeats);
-                                            $seatType = ($seat->row == $showtime->hall->rows || chr(64 + $seat->row) == 'J') ? 'vip' : $seat->type;
+                                            $seatType = $seat->type;
                                         @endphp
                                         
                                         <td>
@@ -290,6 +290,7 @@
                                                         data-seat-id="{{ $seat->id }}"
                                                         data-seat-number="{{ $seat->seat_number }}"
                                                         data-price="{{ $showtime->price }}"
+                                                        data-vip-price="{{ $showtime->vip_price }}"
                                                         data-type="{{ $seatType }}"
                                                         data-row="{{ chr(64 + $row) }}"
                                                         data-column="{{ $seat->column }}"
@@ -309,7 +310,7 @@
                                     @if($seat->column > $midPoint)
                                         @php
                                             $isBooked = in_array($seat->id, $bookedSeats);
-                                            $seatType = ($seat->row == $showtime->hall->rows || chr(64 + $seat->row) == 'J') ? 'vip' : $seat->type;
+                                            $seatType = $seat->type;
                                         @endphp
                                         
                                         <td>
@@ -323,6 +324,7 @@
                                                         data-seat-id="{{ $seat->id }}"
                                                         data-seat-number="{{ $seat->seat_number }}"
                                                         data-price="{{ $showtime->price }}"
+                                                        data-vip-price="{{ $showtime->vip_price }}"
                                                         data-type="{{ $seatType }}"
                                                         data-row="{{ chr(64 + $row) }}"
                                                         data-column="{{ $seat->column }}"
@@ -372,7 +374,7 @@
                     </div>
                     <div class="d-flex justify-content-between mb-2">
                         <span><span class="legend-box" style="background: #FFD700; display: inline-block; width: 15px; height: 15px; border-radius: 3px;"></span> VIP Seat:</span>
-                        <span class="fw-bold text-warning">RM {{ number_format($showtime->price * 1.5, 2) }}</span>
+                        <span class="fw-bold text-warning">RM {{ number_format($showtime->vip_price, 2) }}</span>
                     </div>
                 </div>
                 
@@ -425,8 +427,9 @@ function toggleSeat(button, column, row) {
     const seatNumber = button.dataset.seatNumber;
     const seatType = button.dataset.type;
     const basePrice = parseFloat(button.dataset.price);
+    const vipPrice = parseFloat(button.dataset.vipPrice);
     
-    const finalPrice = seatType === 'vip' ? basePrice * 1.5 : basePrice;
+    const finalPrice = seatType === 'vip' ? vipPrice : basePrice;
     
     if (button.classList.contains('selected')) {
         console.log('Deselected:', seatNumber);

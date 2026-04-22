@@ -7,9 +7,12 @@ use App\Models\BookingSeat;
 use App\Models\ExchangeRequest;
 use App\Models\Seat;
 use App\Models\Showtime;
+use App\Models\SnackOrder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Pagination\Paginator;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class BookingController extends Controller
 {
@@ -82,7 +85,11 @@ class BookingController extends Controller
         }
 
         $seats = Seat::whereIn('id', $request->seats)->get();
-        $totalAmount = count($seats) * $showtime->price;
+        $totalAmount = 0;
+        foreach ($seats as $seat) {
+            $price = $seat->type === 'vip' ? $showtime->vip_price : $showtime->price;
+            $totalAmount += $price;
+        }
 
         session([
             'booking_data' => [
@@ -164,6 +171,16 @@ class BookingController extends Controller
         $items = $snackData['items'];
         $totalAmount = $snackData['total_amount'];
 
+        // Create a snack order record in the database
+        SnackOrder::create([
+            'user_id' => Auth::id(),
+            'booking_id' => null,
+            'items' => $items,
+            'total_amount' => $totalAmount,
+            'order_number' => 'SO'.strtoupper(uniqid()),
+            'status' => 'completed',
+        ]);
+
         session()->forget('snack_data');
 
         return view('bookings.snacks-success', compact('items', 'totalAmount'));
@@ -198,9 +215,27 @@ class BookingController extends Controller
             ->orderBy('start_time')
             ->get();
 
+        $exchangeShows = $showtimes->map(function ($showtime) {
+            return [
+                'id' => $showtime->id,
+                'label' => $showtime->start_time->format('M d, Y h:i A') . ' - ' . $showtime->hall->name,
+                'available' => $showtime->hall->seats->whereNotIn('id', $showtime->getBookedSeats())->count(),
+                'seats' => $showtime->hall->seats->map(function ($seat) use ($showtime) {
+                    return [
+                        'id' => $seat->id,
+                        'seat_number' => $seat->seat_number,
+                        'type' => $seat->type ?: 'regular',
+                        'row' => $seat->row,
+                        'column' => $seat->column,
+                        'booked' => in_array($seat->id, $showtime->getBookedSeats()),
+                    ];
+                })->sortBy('row')->sortBy('column')->values()->all(),
+            ];
+        })->values();
+
         $pageTitle = 'Exchange Ticket';
 
-        return view('bookings.exchange', compact('booking', 'showtimes', 'pageTitle'));
+        return view('bookings.exchange', compact('booking', 'showtimes', 'exchangeShows', 'pageTitle'));
     }
 
     public function storeBooking(Request $request)
@@ -222,6 +257,10 @@ class BookingController extends Controller
 
         $snackData = session('snack_data');
         $finalAmount = $bookingData['total_amount'] + ($snackData['total_amount'] ?? 0);
+        
+        // Apply discount if available
+        $discountAmount = session('discount_amount', 0);
+        $finalAmount = max(0, $finalAmount - $discountAmount);
 
         DB::beginTransaction();
 
@@ -236,10 +275,24 @@ class BookingController extends Controller
             ]);
 
             foreach ($bookingData['seat_ids'] as $seatId) {
+                $seat = Seat::find($seatId);
+                $price = $seat->type === 'vip' ? $showtime->vip_price : $showtime->price;
                 BookingSeat::create([
                     'booking_id' => $booking->id,
                     'seat_id' => $seatId,
-                    'price' => $showtime->price,
+                    'price' => $price,
+                ]);
+            }
+
+            // Store snack order if snacks were purchased
+            if ($snackData) {
+                SnackOrder::create([
+                    'user_id' => Auth::id(),
+                    'booking_id' => $booking->id,
+                    'items' => $snackData['items'],
+                    'total_amount' => $snackData['total_amount'],
+                    'order_number' => 'SO'.strtoupper(uniqid()),
+                    'status' => 'completed',
                 ]);
             }
 
@@ -250,6 +303,8 @@ class BookingController extends Controller
             }
             session()->forget('booking_data');
             session()->forget('snack_data');
+            session()->forget('promotion_code');
+            session()->forget('discount_amount');
 
             return redirect()->route('bookings.success', $booking->id);
 
@@ -285,14 +340,71 @@ class BookingController extends Controller
 
     public function ticketHistory()
     {
-        $bookings = Booking::with(['showtime.movie', 'showtime.hall'])
-            ->where('user_id', Auth::id())
+        $page = request('page', 1);
+        $perPage = 10;
+        $status = request('status');
+        
+        // Fetch bookings
+        $bookingsQuery = Booking::with(['showtime.movie', 'showtime.hall', 'snackOrders'])
+            ->where('user_id', Auth::id());
+
+        // Apply status filter if provided (only to bookings)
+        if ($status && $status !== 'snacks_only') {
+            $bookingsQuery->where('status', $status);
+        }
+
+        $bookings = $bookingsQuery->orderBy('created_at', 'desc')->get();
+
+        // Fetch snack-only orders (no associated booking)
+        $snackOnlyOrders = SnackOrder::where('user_id', Auth::id())
+            ->whereNull('booking_id')
             ->orderBy('created_at', 'desc')
-            ->paginate(10);
+            ->get();
+
+        // Merge and sort all items by created_at descending
+        $allItems = collect();
+        
+        // Add bookings to collection if not filtering for snacks_only
+        if ($status !== 'snacks_only') {
+            foreach ($bookings as $booking) {
+                $booking->type = 'booking';
+                $allItems->push($booking);
+            }
+        }
+        
+        // Add snack-only orders if not filtering by booking status
+        if (!$status || $status === 'snacks_only') {
+            foreach ($snackOnlyOrders as $snackOrder) {
+                $snackOrder->type = 'snack_only';
+                $allItems->push($snackOrder);
+            }
+        }
+
+        // Sort by created_at descending
+        $allItems = $allItems->sortByDesc('created_at')->values();
+
+        // Manual pagination
+        $total = $allItems->count();
+        $items = $allItems->forPage($page, $perPage)->values();
+
+        // Create a LengthAwarePaginator with items as collection
+        $paginator = new LengthAwarePaginator(
+            $items,
+            $total,
+            $perPage,
+            $page,
+            [
+                'path' => route('bookings.my-bookings'),
+                'query' => request()->query(),
+            ]
+        );
 
         $pageTitle = 'Ticket History';
 
-        return view('bookings.my-bookings', compact('bookings', 'pageTitle'));
+        return view('bookings.my-bookings', [
+            'bookings' => $paginator,
+            'pageTitle' => $pageTitle,
+        ]);
     }
 
     public function exchangeDashboard()
@@ -313,7 +425,7 @@ class BookingController extends Controller
 
     public function showBooking($id)
     {
-        $booking = Booking::with(['showtime.movie', 'showtime.hall', 'seats', 'exchangeRequests'])
+        $booking = Booking::with(['showtime.movie', 'showtime.hall', 'seats', 'exchangeRequests', 'snackOrders'])
             ->where('user_id', Auth::id())
             ->findOrFail($id);
 
@@ -404,5 +516,39 @@ class BookingController extends Controller
         ]);
 
         return redirect()->back()->with('success', 'Exchange request submitted successfully.');
+    }
+
+    public function applyPromoCode(Request $request)
+    {
+        $request->validate([
+            'code' => 'required|string|max:20',
+        ]);
+
+        $code = strtoupper(trim($request->code));
+        
+        // Define available promotional codes
+        $promoCodes = [
+            'GSCFIRST5' => ['discount' => 5.00, 'description' => 'RM5 off first booking'],
+            'WEEKEND10' => ['discount' => 10.00, 'description' => 'RM10 off weekend bookings'],
+            'STUDENT20' => ['discount' => 20.00, 'description' => 'RM20 off student discount'],
+        ];
+
+        if (!isset($promoCodes[$code])) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid promotion code',
+            ], 400);
+        }
+
+        $discountInfo = $promoCodes[$code];
+        
+        session(['promotion_code' => $code]);
+        session(['discount_amount' => $discountInfo['discount']]);
+
+        return response()->json([
+            'success' => true,
+            'message' => $discountInfo['description'] . ' applied successfully',
+            'discount' => $discountInfo['discount'],
+        ]);
     }
 }

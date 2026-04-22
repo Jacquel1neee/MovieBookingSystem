@@ -16,9 +16,6 @@
                     <span class="text-white">
                         <i class="bi bi-calendar3 me-2"></i>{{ now()->format('l, d M Y') }}
                     </span>
-                    <a href="{{ route('home') }}" class="btn btn-outline-light btn-sm">
-                        <i class="bi bi-house-door me-1"></i> Home
-                    </a>
                 </div>
             </div>
         </div>

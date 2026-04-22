@@ -50,4 +50,9 @@ class Booking extends Model
     {
         return $this->hasMany(ExchangeRequest::class);
     }
+
+    public function snackOrders()
+    {
+        return $this->hasMany(SnackOrder::class);
+    }
 }

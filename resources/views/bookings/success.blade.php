@@ -33,11 +33,13 @@
                         <div class="col-md-6">
                             <h5>Seat Details</h5>
                             <p>
+                                @php $seatTotal = 0; @endphp
                                 @foreach($booking->seats as $seat)
-                                    {{ $seat->seat_number }}@if(!$loop->last), @endif
+                                    {{ $seat->seat_number }} ({{ ucfirst($seat->type) }}) - ${{ number_format($seat->pivot->price, 2) }}<br>
+                                    @php $seatTotal += $seat->pivot->price; @endphp
                                 @endforeach
                                 <br>
-                                Total Amount: <strong>${{ number_format($booking->total_amount, 2) }}</strong>
+                                <strong>Total Amount: ${{ number_format($seatTotal, 2) }}</strong>
                             </p>
                         </div>
                     </div>

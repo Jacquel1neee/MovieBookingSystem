@@ -24,7 +24,12 @@
                             <p class="mb-1"><strong>Date:</strong> {{ $showtime->start_time->format('l, F j, Y') }}</p>
                             <p class="mb-1"><strong>Time:</strong> {{ $showtime->start_time->format('h:i A') }} - {{ $showtime->end_time->format('h:i A') }}</p>
                             <p class="mb-1"><strong>Hall:</strong> {{ $showtime->hall->name }}</p>
-                            <p class="mb-1"><strong>Seats:</strong> {{ implode(', ', $seats->pluck('seat_number')->toArray()) }}</p>
+                            <p class="mb-1"><strong>Seats:</strong></p>
+                            <ul class="mb-1">
+                                @foreach($seats as $seat)
+                                    <li>{{ $seat->seat_number }} ({{ ucfirst($seat->type) }}) - RM {{ number_format($seat->type === 'vip' ? $showtime->vip_price : $showtime->price, 2) }}</li>
+                                @endforeach
+                            </ul>
                             <p class="mb-0"><strong>Total:</strong> RM {{ number_format($bookingData['total_amount'], 2) }}</p>
                         </div>
                     </div>
@@ -45,12 +50,29 @@
                                 </li>
                             @endif
                             <li class="list-group-item d-flex justify-content-between">
+                                <span>Subtotal</span>
+                                <strong>RM {{ number_format($combinedTotal, 2) }}</strong>
+                            </li>
+                            <li class="list-group-item">
+                                <div class="input-group input-group-sm">
+                                    <input type="text" class="form-control" id="promo-code" placeholder="Enter promotion code (e.g., GSCFIRST5)" maxlength="20">
+                                    <button class="btn btn-outline-secondary" type="button" id="apply-promo">Apply</button>
+                                </div>
+                                <small class="text-muted d-block mt-2">Welcome code: GSCFIRST5 for RM5 off</small>
+                            </li>
+                            @if(session('discount_amount'))
+                                <li class="list-group-item d-flex justify-content-between text-success">
+                                    <span>Discount</span>
+                                    <strong>-RM {{ number_format(session('discount_amount'), 2) }}</strong>
+                                </li>
+                            @endif
+                            <li class="list-group-item d-flex justify-content-between">
                                 <span>Payment method</span>
                                 <strong>Demo Checkout</strong>
                             </li>
-                            <li class="list-group-item d-flex justify-content-between">
-                                <span>Total amount</span>
-                                <strong>RM {{ number_format($combinedTotal, 2) }}</strong>
+                            <li class="list-group-item d-flex justify-content-between bg-light">
+                                <span class="fw-bold">Total amount</span>
+                                <strong class="text-danger">RM {{ number_format($combinedTotal - (session('discount_amount') ?? 0), 2) }}</strong>
                             </li>
                         </ul>
                     </div>
@@ -83,4 +105,49 @@
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const applyPromoBtn = document.getElementById('apply-promo');
+    const promoCodeInput = document.getElementById('promo-code');
+    
+    if (applyPromoBtn && promoCodeInput) {
+        applyPromoBtn.addEventListener('click', function() {
+            const code = promoCodeInput.value.trim();
+            
+            if (!code) {
+                alert('Please enter a promotion code');
+                return;
+            }
+            
+            // Send AJAX request to apply promo code
+            fetch("{{ route('bookings.apply-promo') }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({
+                    code: code
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(data => Promise.reject(data));
+                }
+                return response.json();
+            })
+            .then(data => {
+                alert(data.message);
+                // Reload the page to show the updated discount
+                location.reload();
+            })
+            .catch(error => {
+                alert(error.message || 'Failed to apply promotion code');
+                console.error('Error:', error);
+            });
+        });
+    }
+});
+</script>
 @endsection
