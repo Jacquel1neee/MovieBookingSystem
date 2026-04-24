@@ -63,30 +63,23 @@ Route::middleware(['auth'])->group(function () {
 });
 
 Route::prefix('admin')->name('admin.')->middleware(['auth', \App\Http\Middleware\EnsureUserIsAdmin::class])->group(function () {
-    // Admin Dashboard - 这个路由必须存在
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
     Route::get('/manage-admins', [AdminController::class, 'manageAdmins'])->name('manage-admins');
     Route::post('/users/{user}/toggle-admin', [AdminController::class, 'toggleAdmin'])->name('toggle-admin');
 
-    // Movie management
     Route::resource('movies', AdminMovieController::class);
 
-    // Hall management
     Route::resource('halls', AdminHallController::class);
     Route::get('/halls/{hall}/seats', [AdminHallController::class, 'seats'])->name('halls.seats');
     Route::post('/halls/{hall}/seats', [AdminHallController::class, 'updateSeats'])->name('halls.update-seats');
 
-    // Showtime management
     Route::resource('showtimes', AdminShowtimeController::class);
 
-    // Booking management
     Route::get('/bookings', [AdminBookingController::class, 'index'])->name('bookings.index');
     Route::get('/bookings/{booking}', [AdminBookingController::class, 'show'])->name('bookings.show');
     Route::post('/bookings/{booking}/status', [AdminBookingController::class, 'updateStatus'])->name('bookings.update-status');
 
-    // Exchange request management
     Route::get('/exchange-requests', [AdminExchangeRequestController::class, 'index'])->name('exchange-requests.index');
     Route::get('/exchange-requests/{exchangeRequest}', [AdminExchangeRequestController::class, 'show'])->name('exchange-requests.show');
-    Route::post('/exchange-requests/{exchangeRequest}/approve', [AdminExchangeRequestController::class, 'approve'])->name('exchange-requests.approve');
-    Route::post('/exchange-requests/{exchangeRequest}/reject', [AdminExchangeRequestController::class, 'reject'])->name('exchange-requests.reject');
+    Route::post('/exchange-requests/{exchangeRequest}/status', [AdminExchangeRequestController::class, 'updateStatus'])->name('exchange-requests.update-status');
 });
