@@ -125,6 +125,11 @@ class ExchangeRequestController extends Controller
         $exchangeRequest->admin_remarks = $request->admin_remarks;
         $exchangeRequest->save();
 
+<<<<<<< HEAD
         return redirect()->back()->with('success', 'Exchange request rejected.');
     }
+=======
+//         return redirect()->back()->with('success', 'Exchange request rejected.');
+//     }
+>>>>>>> 6632eff (...)
 }
