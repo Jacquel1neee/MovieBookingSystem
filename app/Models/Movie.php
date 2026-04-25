@@ -11,7 +11,7 @@ class Movie extends Model
     //
     use HasFactory;
 
-    protected $table = 'movies';  // 指定正确的表名
+    protected $table = 'movies';
 
     protected $fillable = [
         'title',

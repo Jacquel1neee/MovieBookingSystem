@@ -252,7 +252,7 @@
                     <div class="screen">🎬 SCREEN 🎬</div>
                 </div>
                 
-                <!-- 座位图 -->
+                <!-- Seating Chart -->
                 <div class="seats-wrapper" style="overflow-x: auto;">
                     <form id="seat-selection-form" action="{{ route('bookings.confirm') }}" method="POST">
                         @csrf
@@ -268,10 +268,10 @@
                             
                             @foreach($seatsByRow as $row => $seats)
                             <tr>
-                                <!-- 左边行号 -->
+                                <!-- Row Number -->
                                 <td class="row-label">{{ chr(64 + $row) }}</td>
                                 
-                                <!-- 左边座位 (1到中间) -->
+                                <!-- Left Side Seats -->
                                 @foreach($seats->sortBy('column') as $seat)
                                     @if($seat->column <= $midPoint)
                                         @php
@@ -302,10 +302,10 @@
                                     @endif
                                 @endforeach
                                 
-                                <!-- 过道 -->
+                                <!-- Aisle -->
                                 <td class="aisle-col"></td>
                                 
-                                <!-- 右边座位 (中间+1到最后一列) -->
+                                <!-- Right Side Seats -->
                                 @foreach($seats->sortBy('column') as $seat)
                                     @if($seat->column > $midPoint)
                                         @php
@@ -336,7 +336,7 @@
                                     @endif
                                 @endforeach
                                 
-                                <!-- 右边行号 -->
+                                <!-- Right Side Row Number -->
                                 <td class="row-label">{{ chr(64 + $row) }}</td>
                             </tr>
                             @endforeach

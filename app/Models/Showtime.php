@@ -33,7 +33,6 @@ class Showtime extends Model
         return $this->hasMany(Booking::class);
     }
 
-    // 获取已预订的座位ID
     public function getBookedSeats()
     {
         $bookedSeats = [];
