@@ -43,6 +43,23 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_admin' => 'boolean',
         ];
+    }
+
+    /**
+     * Get the bookings assigned to the user.
+     */
+    public function bookings()
+    {
+        return $this->hasMany(Booking::class);
+    }
+
+    /**
+     * Get the exchange requests made by the user.
+     */
+    public function exchangeRequests()
+    {
+        return $this->hasMany(ExchangeRequest::class);
     }
 }
